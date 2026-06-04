@@ -720,6 +720,8 @@ export function EntryShell({
                 onOpenProject={onOpenProject}
                 onViewAllProjects={() => changeView('projects')}
                 onBrowseRegistry={() => changeView('plugins')}
+                onOpenIntegrations={() => openIntegrationTab('connectors')}
+                onOpenMcp={() => openIntegrationTab('mcp')}
                 onImportFolder={onImportFolder}
                 onImportFolderResponse={onImportFolderResponse}
                 onOpenNewProject={(tab) => {
