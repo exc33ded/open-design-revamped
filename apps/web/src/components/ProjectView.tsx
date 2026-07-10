@@ -1387,6 +1387,12 @@ export function ProjectView({
     detailedProject && detailedProject.updatedAt >= project.updatedAt ? detailedProject : project;
   const projectDesignSystemId = resolveProjectDesignSystemId(currentProject);
   const projectIsDesignSystemProject = isDesignSystemProject(currentProject);
+  // Website-clone turns reproduce a whole multi-page site; auto-open should
+  // land on the site entry (index.html), not the last-written subpage. See
+  // `SelectAutoOpenOptions.preferSiteEntry`.
+  const autoOpenArtifactOptions = {
+    preferSiteEntry: currentProject.metadata?.intent === 'web-clone',
+  };
   const designSystemBrandId = projectIsDesignSystemProject
     ? currentProject.metadata?.brandId?.trim() || null
     : null;
@@ -3854,7 +3860,7 @@ export function ProjectView({
             }
             const diff = computeProducedFiles(beforeFileNames, nextFiles) ?? [];
             const produced = mergeRecoveredArtifact(diff, recoveredExistingArtifact);
-            const producedArtifactToOpen = selectAutoOpenProducedArtifact(produced);
+            const producedArtifactToOpen = selectAutoOpenProducedArtifact(produced, autoOpenArtifactOptions);
             if (producedArtifactToOpen) requestOpenFile(producedArtifactToOpen);
             if (produced.length > 0) {
               updateMessageById(
@@ -4132,7 +4138,7 @@ export function ProjectView({
                   ) ?? [],
                   recoveredExistingArtifact,
                 );
-                const producedArtifactToOpen = selectAutoOpenProducedArtifact(produced);
+                const producedArtifactToOpen = selectAutoOpenProducedArtifact(produced, autoOpenArtifactOptions);
                 if (producedArtifactToOpen) requestOpenFile(producedArtifactToOpen);
                 updateMessageById(
                   message.id,
@@ -4220,7 +4226,7 @@ export function ProjectView({
                     if (produced.length > 0) {
                       recoveredArtifactMessagesRef.current.add(message.id);
                     }
-                    const producedArtifactToOpen = selectAutoOpenProducedArtifact(produced);
+                    const producedArtifactToOpen = selectAutoOpenProducedArtifact(produced, autoOpenArtifactOptions);
                     if (producedArtifactToOpen) requestOpenFile(producedArtifactToOpen);
                     if (latestRunStatus?.status === 'succeeded') setError(null);
                     // Unlike the recoverArtifacts sibling below, this row's
@@ -4582,7 +4588,7 @@ export function ProjectView({
             continue;
           }
           recoveredArtifactMessagesRef.current.add(message.id);
-          const producedArtifactToOpen = selectAutoOpenProducedArtifact(produced);
+          const producedArtifactToOpen = selectAutoOpenProducedArtifact(produced, autoOpenArtifactOptions);
           if (producedArtifactToOpen) requestOpenFile(producedArtifactToOpen);
           // This message's persisted runStatus was already terminal (a
           // precondition of hasRecoverableArtifactMessage); when it has no
@@ -5494,7 +5500,7 @@ export function ProjectView({
                 nextFiles,
                 traceTouchedFilePaths,
               ) ?? [];
-              const producedArtifactToOpen = selectAutoOpenProducedArtifact(produced);
+              const producedArtifactToOpen = selectAutoOpenProducedArtifact(produced, autoOpenArtifactOptions);
               if (producedArtifactToOpen) requestOpenFile(producedArtifactToOpen);
               setMessages((curr) => {
                 const updated = curr.map((m) =>

@@ -705,7 +705,13 @@ export function composeSystemPrompt({
   if (!isAskMode) {
     parts.push(
       '# Identity and workflow charter (background)\n\n',
-      renderOfficialDesignerPrompt(resolvedExecutionProfile),
+      renderOfficialDesignerPrompt(resolvedExecutionProfile, {
+        // Website Clone runs swap the "don't recreate copyrighted designs"
+        // guardrail for a faithful-reproduction + pre-deploy-checklist rule —
+        // see WEB_CLONE_COPYRIGHT_GUARDRAIL_BULLET. Stable per project, so
+        // the stable-prompt fingerprint stays cacheable.
+        webCloneFidelity: metadata?.intent === 'web-clone',
+      }),
     );
   }
 
