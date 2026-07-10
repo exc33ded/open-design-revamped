@@ -57,7 +57,16 @@ export const reasonixAgentDef = {
         timeoutMs: 15_000,
         defaultModelOption: DEFAULT_MODEL_OPTION,
       }),
-    buildArgs: () => ['acp'],
+    buildArgs: (_prompt, _imagePaths, _extraAllowedDirs, options) => {
+      const args = ['acp'];
+      if (options?.model && options.model !== 'default') {
+        args.push('--model', options.model);
+      }
+      if (options?.reasoning && options.reasoning !== 'default') {
+        args.push('--effort', options.reasoning);
+      }
+      return args;
+    },
     streamFormat: 'acp-json-rpc',
     mcpDiscovery: 'mature-acp',
     externalMcpInjection: 'acp-merge',
@@ -70,6 +79,15 @@ export const reasonixAgentDef = {
       DEFAULT_MODEL_OPTION,
       { id: 'deepseek-v4-pro', label: 'deepseek-v4-pro' },
       { id: 'deepseek-v4-flash', label: 'deepseek-v4-flash' },
+    ],
+    // `reasonix acp --effort` levels; 'default' defers to the user's
+    // ~/.reasonix/config.json effort setting.
+    reasoningOptions: [
+      { id: 'default', label: 'Default' },
+      { id: 'low', label: 'Low' },
+      { id: 'medium', label: 'Medium' },
+      { id: 'high', label: 'High' },
+      { id: 'max', label: 'Max' },
     ],
     installUrl: 'https://github.com/esengine/DeepSeek-Reasonix',
     docsUrl: 'https://esengine.github.io/DeepSeek-Reasonix/',

@@ -850,13 +850,18 @@ const USER_DESIGN_TEMPLATES_DIR = path.join(RUNTIME_DATA_DIR, 'design-templates'
 // gallery; ALL_SKILL_LIKE_ROOTS spans both for chat run system-prompt
 // composition and the orbit template resolver, where stored project ids
 // can resolve to either root after the split.
-const SKILL_ROOTS = [USER_SKILLS_DIR, SKILLS_DIR];
+// User-global Claude Code skills (~/.claude/skills). docs/architecture.md
+// documents this root but upstream never wired it; scanned lowest-priority
+// so daemon/user skills win on id conflicts.
+const CLAUDE_USER_SKILLS_DIR = path.join(os.homedir(), '.claude', 'skills');
+const SKILL_ROOTS = [USER_SKILLS_DIR, SKILLS_DIR, CLAUDE_USER_SKILLS_DIR];
 const DESIGN_TEMPLATE_ROOTS = [USER_DESIGN_TEMPLATES_DIR, DESIGN_TEMPLATES_DIR];
 const ALL_SKILL_LIKE_ROOTS = [
   USER_SKILLS_DIR,
   USER_DESIGN_TEMPLATES_DIR,
   SKILLS_DIR,
   DESIGN_TEMPLATES_DIR,
+  CLAUDE_USER_SKILLS_DIR,
 ];
 // Global OD Library data root — owned, content-addressed assets captured by
 // the clipper / `od library import`. Derived from RUNTIME_DATA_DIR per the
