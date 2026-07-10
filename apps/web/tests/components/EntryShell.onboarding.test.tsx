@@ -307,7 +307,7 @@ describe('EntryShell settings menu', () => {
       }
       if (url.endsWith('/api/github/open-design')) {
         return jsonResponse({
-          repo: 'nexu-io/open-design',
+          repo: 'exc33ded/open-design-revamped',
           stargazers_count: 56100,
           fetchedAt: Date.now(),
           stale: false,
@@ -383,7 +383,7 @@ describe('EntryShell new project rail', () => {
         }
         if (url.endsWith('/api/github/open-design')) {
           return jsonResponse({
-            repo: 'nexu-io/open-design',
+            repo: 'exc33ded/open-design-revamped',
             stargazers_count: 0,
             fetchedAt: Date.now(),
             stale: false,
@@ -452,7 +452,7 @@ describe('EntryShell new project rail', () => {
         }
         if (url.endsWith('/api/github/open-design')) {
           return jsonResponse({
-            repo: 'nexu-io/open-design',
+            repo: 'exc33ded/open-design-revamped',
             stargazers_count: 0,
             fetchedAt: Date.now(),
             stale: false,

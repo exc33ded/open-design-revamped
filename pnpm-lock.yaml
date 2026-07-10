@@ -29,15 +29,6 @@ importers:
       '@open-design/tools-dev':
         specifier: workspace:*
         version: link:tools/dev
-      '@open-design/tools-pack':
-        specifier: workspace:*
-        version: link:tools/pack
-      '@open-design/tools-release':
-        specifier: workspace:*
-        version: link:tools/release
-      '@open-design/tools-serve':
-        specifier: workspace:*
-        version: link:tools/serve
       '@types/node':
         specifier: 20.19.39
         version: 20.19.39

@@ -136,11 +136,11 @@ describe('derivePluginSourceLinks · url + local + bundled sources', () => {
         source:     'plugins/_official/scenarios/od-code-migration',
       }),
     );
-    expect(out.sourceUrl).toBe('https://github.com/nexu-io/open-design');
+    expect(out.sourceUrl).toBe('https://github.com/exc33ded/open-design-revamped');
     expect(out.sourceKindLabel).toBe('Official');
-    expect(out.sourceLabel).toBe('nexu-io/open-design');
-    expect(out.authorProfileUrl).toBe('https://github.com/nexu-io/open-design');
-    expect(out.homepageUrl).toBe('https://github.com/nexu-io/open-design');
+    expect(out.sourceLabel).toBe('exc33ded/open-design-revamped');
+    expect(out.authorProfileUrl).toBe('https://github.com/exc33ded/open-design-revamped');
+    expect(out.homepageUrl).toBe('https://github.com/exc33ded/open-design-revamped');
   });
 });
 
@@ -195,13 +195,13 @@ describe('derivePluginSourceLinks · author + contribute', () => {
         manifest: {
           name:    'p',
           version: '1.0.0',
-          homepage: 'https://github.com/nexu-io/open-design',
+          homepage: 'https://github.com/exc33ded/open-design-revamped',
         } as InstalledPluginRecord['manifest'],
       }),
     );
-    expect(out.contributeUrl).toBe('https://github.com/nexu-io/open-design/issues/new');
+    expect(out.contributeUrl).toBe('https://github.com/exc33ded/open-design-revamped/issues/new');
     expect(out.contributeOnGithub).toBe(true);
-    expect(out.homepageUrl).toBe('https://github.com/nexu-io/open-design');
+    expect(out.homepageUrl).toBe('https://github.com/exc33ded/open-design-revamped');
   });
 
   it('drops malformed homepage values', () => {

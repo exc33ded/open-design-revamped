@@ -439,8 +439,8 @@ describe('PluginDetailsModal common metadata coverage', () => {
       }),
     );
 
-    expect(html).toContain('href="https://github.com/nexu-io/open-design"');
-    expect(html).toContain('nexu-io/open-design');
+    expect(html).toContain('href="https://github.com/exc33ded/open-design-revamped"');
+    expect(html).toContain('exc33ded/open-design-revamped');
     expect(html).toContain('Official');
   });
 });

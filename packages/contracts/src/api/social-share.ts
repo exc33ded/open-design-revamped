@@ -1,4 +1,4 @@
-export const OPEN_DESIGN_GITHUB_REPO_URL = 'https://github.com/nexu-io/open-design';
+export const OPEN_DESIGN_GITHUB_REPO_URL = 'https://github.com/exc33ded/open-design-revamped';
 
 export type SocialShareTargetKind = 'open-design-repo' | 'project-html';
 

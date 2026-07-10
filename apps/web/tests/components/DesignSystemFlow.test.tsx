@@ -407,7 +407,7 @@ describe('DesignSystemCreationFlow', () => {
 
     render(<DesignSystemCreationFlow onBack={() => {}} onCreated={onCreated} />);
 
-    addSourceUrl('git@github.com:nexu-io/open-design.git');
+    addSourceUrl('git@github.com:exc33ded/open-design-revamped.git');
     continueToGeneration();
     confirmExtraction();
 
@@ -417,7 +417,7 @@ describe('DesignSystemCreationFlow', () => {
       | undefined;
     expect(requestInit).toBeTruthy();
     expect(JSON.parse(requestInit!.body)).toMatchObject({
-      url: 'https://github.com/nexu-io/open-design',
+      url: 'https://github.com/exc33ded/open-design-revamped',
     });
   });
 
@@ -2028,10 +2028,10 @@ describe('DesignSystemCreationFlow', () => {
     expect(screen.getByText('Coming soon')).toBeTruthy();
     expect(screen.getByText('Not configured')).toBeTruthy();
 
-    fireEvent.change(input, { target: { value: 'https://github.com/nexu-io/open-design/' } });
+    fireEvent.change(input, { target: { value: 'https://github.com/exc33ded/open-design-revamped/' } });
     fireEvent.click(screen.getByRole('button', { name: 'Add' }));
 
-    expect(screen.getByText('nexu-io/open-design')).toBeTruthy();
+    expect(screen.getByText('exc33ded/open-design-revamped')).toBeTruthy();
 
     fireEvent.click(screen.getByRole('button', { name: 'Configure Composio' }));
 
@@ -2147,10 +2147,10 @@ describe('DesignSystemCreationFlow', () => {
       const input = screen.getByPlaceholderText('https://example.com or https://github.com/owner/repo') as HTMLInputElement;
       expect(input.disabled).toBe(false);
 
-      fireEvent.change(input, { target: { value: 'https://github.com/nexu-io/open-design/' } });
+      fireEvent.change(input, { target: { value: 'https://github.com/exc33ded/open-design-revamped/' } });
       fireEvent.click(screen.getByRole('button', { name: 'Add' }));
 
-      expect(screen.getByText('nexu-io/open-design')).toBeTruthy();
+      expect(screen.getByText('exc33ded/open-design-revamped')).toBeTruthy();
       expect(input.value).toBe('');
     } finally {
       window.removeEventListener(CONNECTORS_CHANGED_EVENT, onConnectorsChanged);
@@ -2287,7 +2287,7 @@ describe('DesignSystemCreationFlow', () => {
     fireEvent.change(screen.getByPlaceholderText(/Mission Impastabowl/i), {
       target: { value: 'GitHub: product workspace' },
     });
-    addSourceUrl('https://github.com/nexu-io/open-design');
+    addSourceUrl('https://github.com/exc33ded/open-design-revamped');
     continueToGeneration();
     confirmExtraction();
 
@@ -2300,7 +2300,7 @@ describe('DesignSystemCreationFlow', () => {
     expect(mocks.writeProjectTextFile).toHaveBeenCalledWith(
       project.id,
       'context/source-context.md',
-      expect.stringContaining('https://github.com/nexu-io/open-design'),
+      expect.stringContaining('https://github.com/exc33ded/open-design-revamped'),
     );
     expect(mocks.writeProjectTextFile).toHaveBeenCalledWith(
       project.id,
@@ -2310,7 +2310,7 @@ describe('DesignSystemCreationFlow', () => {
     expect(mocks.writeProjectTextFile).toHaveBeenCalledWith(
       project.id,
       'context/source-context.md',
-      expect.stringContaining('"$OD_NODE_BIN" "$OD_BIN" tools connectors github-design-context --repo \'https://github.com/nexu-io/open-design\' --output context/github/nexu-io-open-design.md'),
+      expect.stringContaining('"$OD_NODE_BIN" "$OD_BIN" tools connectors github-design-context --repo \'https://github.com/exc33ded/open-design-revamped\' --output context/github/exc33ded-open-design-revamped.md'),
     );
     expect(mocks.writeProjectTextFile).not.toHaveBeenCalledWith(
       project.id,
@@ -2440,7 +2440,7 @@ describe('DesignSystemCreationFlow', () => {
     fireEvent.change(screen.getByPlaceholderText(/Mission Impastabowl/i), {
       target: { value: 'GitHub: product workspace' },
     });
-    addSourceUrl('https://github.com/nexu-io/open-design');
+    addSourceUrl('https://github.com/exc33ded/open-design-revamped');
     continueToGeneration();
     confirmExtraction();
 

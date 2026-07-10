@@ -1716,7 +1716,7 @@ export function buildDesignSystemSkillsMarkdown(input: {
       'coding agent.',
   );
   lines.push('');
-  lines.push('https://github.com/nexu-io/open-design');
+  lines.push('https://github.com/exc33ded/open-design-revamped');
   lines.push('');
 
   return lines.join('\n');

@@ -1039,8 +1039,8 @@ export function registerProjectExportRoutes(app: Express, ctx: RegisterProjectEx
   // would otherwise pass the daemon middleware) cannot escalate to
   // daemon-origin privileges through script execution.
   //
-  // See nexu-io/open-design#368 and the architecture lock at
-  // https://github.com/nexu-io/open-design/issues/368#issuecomment-4366243218.
+  // See exc33ded/open-design-revamped#368 and the architecture lock at
+  // https://github.com/exc33ded/open-design-revamped/issues/368#issuecomment-4366243218.
   app.get('/api/projects/:id/export/*splat', async (req, res) => {
     try {
       if (!isSafeId(req.params.id)) {

@@ -143,6 +143,18 @@ export const KNOWN_PROVIDERS: KnownProvider[] = [
     ],
   },
   {
+    label: 'DeepSeek — OpenAI',
+    protocol: 'openai',
+    baseUrl: 'https://api.deepseek.com/v1',
+    model: 'deepseek-chat',
+    models: [
+      'deepseek-chat',
+      'deepseek-reasoner',
+      'deepseek-v4-flash',
+      'deepseek-v4-pro',
+    ],
+  },
+  {
     label: 'MiniMax — Anthropic',
     protocol: 'anthropic',
     baseUrl: 'https://api.minimax.io/anthropic',

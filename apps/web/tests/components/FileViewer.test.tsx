@@ -6533,7 +6533,7 @@ describe('applyInspectOverridesToSource', () => {
     expect(next.indexOf('<style data-od-inspect-overrides>')).toBeLessThan(next.indexOf('<main'));
   });
 
-  // Regression for nexu-io/open-design#362: if a source file has more than
+  // Regression for exc33ded/open-design-revamped#362: if a source file has more than
   // one inspect override block (manual edit, or an earlier buggy save), the
   // splicer must drop them all before inserting the new block. A non-global
   // regex would only strip the first, so save-then-reload could resurrect an
@@ -6554,7 +6554,7 @@ describe('applyInspectOverridesToSource', () => {
     expect(cleared).not.toContain('data-od-inspect-overrides');
   });
 
-  // Regression for nexu-io/open-design#362: the splicer must be HTML-aware
+  // Regression for exc33ded/open-design-revamped#362: the splicer must be HTML-aware
   // when locating its own override block and the head insertion point.
   // Generated artifacts commonly carry inline scripts/styles that mention
   // `</head>` or `<style data-od-inspect-overrides>` as text, e.g. a
@@ -6620,7 +6620,7 @@ describe('applyInspectOverridesToSource', () => {
     expect(allMatches).toHaveLength(1);
   });
 
-  // Regression for nexu-io/open-design#362: the splicer must look at real
+  // Regression for exc33ded/open-design-revamped#362: the splicer must look at real
   // attribute names, not just substring-match the marker text against the
   // whole opening tag. A `\bdata-od-inspect-overrides\b` regex over the
   // full tag matches both a longer attribute name (`-note` suffix) and the
@@ -6730,7 +6730,7 @@ describe('serializeInspectOverrides', () => {
     expect(out).not.toContain('[data-od-id="hero"]');
   });
 
-  // Regression for nexu-io/open-design#362: standard deck slides ship as
+  // Regression for exc33ded/open-design-revamped#362: standard deck slides ship as
   // `<section data-screen-label="01 Cover">`. The bridge keys overrides by
   // the raw label and posts a CSS.escape'd selector, so the host must
   // accept whitespace/leading-digit ids and detect the selector kind by
@@ -6827,7 +6827,7 @@ describe('serializeInspectOverrides', () => {
   });
 });
 
-// Regression for nexu-io/open-design#362: the host owns the inspect override
+// Regression for exc33ded/open-design-revamped#362: the host owns the inspect override
 // map authoritatively. Hydration parses the artifact source on load so an
 // initial Save-to-source preserves prior rules even when the user edits a
 // different element, and forging the iframe's od:inspect-overrides reply
@@ -6900,7 +6900,7 @@ describe('parseInspectOverridesFromSource', () => {
     expect(parseInspectOverridesFromSource(source)).toEqual({});
   });
 
-  // Regression for nexu-io/open-design#362: hydration must require an
+  // Regression for exc33ded/open-design-revamped#362: hydration must require an
   // actual `data-od-inspect-overrides` attribute name, not a boundary-only
   // substring match against the whole opening tag. Otherwise a sibling
   // attribute name with `-note` suffix or a tooltip whose value contains

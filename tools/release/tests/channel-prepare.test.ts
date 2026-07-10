@@ -176,7 +176,7 @@ function stablePrereleaseMetadata(publicOrigin: string, baseVersion: string): Re
     github: {
       branch: `release/v${baseVersion}`,
       commit: "0123456789abcdef0123456789abcdef01234567",
-      repository: "nexu-io/open-design",
+      repository: "exc33ded/open-design-revamped",
       workflow: "release-prerelease",
     },
     platforms: {
@@ -240,7 +240,7 @@ describe("tools-release local channel prepare validation", () => {
     try {
       const fakeGh = await writeFakeGhScript(ghRoot);
       const commonEnv = {
-        GITHUB_REPOSITORY: "nexu-io/open-design",
+        GITHUB_REPOSITORY: "exc33ded/open-design-revamped",
         GITHUB_SHA: "0123456789abcdef0123456789abcdef01234567",
         OPEN_DESIGN_GH_NODE_SCRIPT: fakeGh,
         OPEN_DESIGN_STABLE_METADATA_URL: `${server.origin}/stable/latest/metadata.json`,
@@ -307,7 +307,7 @@ describe("tools-release local channel prepare validation", () => {
     try {
       const beta = await runPrepare("beta", {
         GITHUB_REF_NAME: "main",
-        GITHUB_REPOSITORY: "nexu-io/open-design",
+        GITHUB_REPOSITORY: "exc33ded/open-design-revamped",
         GITHUB_SHA: "0123456789abcdef0123456789abcdef01234567",
         OPEN_DESIGN_BETA_METADATA_URL: `${server.origin}/beta/latest/metadata.json`,
         OPEN_DESIGN_RELEASE_FORCE: "1",
@@ -333,7 +333,7 @@ describe("tools-release local channel prepare validation", () => {
     try {
       const preview = await runPrepare("preview", {
         GITHUB_REF_NAME: "main",
-        GITHUB_REPOSITORY: "nexu-io/open-design",
+        GITHUB_REPOSITORY: "exc33ded/open-design-revamped",
         GITHUB_SHA: "0123456789abcdef0123456789abcdef01234567",
         OPEN_DESIGN_PREVIEW_METADATA_URL: `${server.origin}/preview/latest/metadata.json`,
       });
@@ -362,7 +362,7 @@ describe("tools-release local channel prepare validation", () => {
     try {
       const betas = await runPrepare("betas", {
         GITHUB_REF_NAME: "main",
-        GITHUB_REPOSITORY: "nexu-io/open-design",
+        GITHUB_REPOSITORY: "exc33ded/open-design-revamped",
         GITHUB_SHA: "0123456789abcdef0123456789abcdef01234567",
         OPEN_DESIGN_BETAS_METADATA_URL: `${server.origin}/betas/latest/metadata.json`,
         OPEN_DESIGN_STABLE_METADATA_URL: `${server.origin}/stable/latest/metadata.json`,
@@ -388,7 +388,7 @@ describe("tools-release local channel prepare validation", () => {
       const fakeGh = await writeFakeGhScript(ghRoot);
       const stable = await runPrepare("stable", {
         GITHUB_REF_NAME: `release/v${packagedVersion}`,
-        GITHUB_REPOSITORY: "nexu-io/open-design",
+        GITHUB_REPOSITORY: "exc33ded/open-design-revamped",
         GITHUB_SHA: "0123456789abcdef0123456789abcdef01234567",
         OPEN_DESIGN_GH_NODE_SCRIPT: fakeGh,
         OPEN_DESIGN_RELEASE_DRY_RUN: "true",
@@ -423,7 +423,7 @@ describe("tools-release local channel prepare validation", () => {
       const fakeGh = await writeFakeGhScript(ghRoot);
       const stable = await runPrepare("stable", {
         GITHUB_REF_NAME: `release/v${packagedVersion}`,
-        GITHUB_REPOSITORY: "nexu-io/open-design",
+        GITHUB_REPOSITORY: "exc33ded/open-design-revamped",
         GITHUB_SHA: "0123456789abcdef0123456789abcdef01234567",
         OPEN_DESIGN_GH_NODE_SCRIPT: fakeGh,
         OPEN_DESIGN_RELEASE_DRY_RUN: "prepublish",
@@ -455,7 +455,7 @@ describe("tools-release local channel prepare validation", () => {
       const fakeGh = await writeFakeGhScript(ghRoot);
       const stable = await runPrepare("stable", {
         GITHUB_REF_NAME: `release/v${packagedVersion}`,
-        GITHUB_REPOSITORY: "nexu-io/open-design",
+        GITHUB_REPOSITORY: "exc33ded/open-design-revamped",
         GITHUB_SHA: "0123456789abcdef0123456789abcdef01234567",
         OPEN_DESIGN_GH_NODE_SCRIPT: fakeGh,
         OPEN_DESIGN_RELEASE_DRY_RUN: "false",
@@ -485,7 +485,7 @@ describe("tools-release local channel prepare validation", () => {
       const fakeGh = await writeFakeGhScript(ghRoot);
       await expect(runPrepare("stable", {
         GITHUB_REF_NAME: `release/v${packagedVersion}`,
-        GITHUB_REPOSITORY: "nexu-io/open-design",
+        GITHUB_REPOSITORY: "exc33ded/open-design-revamped",
         GITHUB_SHA: "0123456789abcdef0123456789abcdef01234567",
         OPEN_DESIGN_GH_NODE_SCRIPT: fakeGh,
         OPEN_DESIGN_RELEASE_DRY_RUN: "metadata",
@@ -510,7 +510,7 @@ describe("tools-release local channel prepare validation", () => {
       const fakeGh = await writeFakeGhScript(ghRoot);
       await expect(runPrepare("stable", {
         GITHUB_REF_NAME: "main",
-        GITHUB_REPOSITORY: "nexu-io/open-design",
+        GITHUB_REPOSITORY: "exc33ded/open-design-revamped",
         GITHUB_SHA: "0123456789abcdef0123456789abcdef01234567",
         OPEN_DESIGN_GH_NODE_SCRIPT: fakeGh,
         OPEN_DESIGN_RELEASE_DRY_RUN: "metadata",

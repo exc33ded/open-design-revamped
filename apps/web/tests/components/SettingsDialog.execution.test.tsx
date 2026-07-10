@@ -4737,7 +4737,7 @@ describe('SettingsDialog about interactions', () => {
 
     fireEvent.click(screen.getByRole('button', { name: en['settings.updateViewReleases'] }));
 
-    expect(openExternalUrlMock).toHaveBeenCalledWith('https://github.com/nexu-io/open-design/releases');
+    expect(openExternalUrlMock).toHaveBeenCalledWith('https://github.com/exc33ded/open-design-revamped/releases');
   });
 
   it('downloads an available packaged update from the about page', async () => {

@@ -15,7 +15,7 @@
 # revisiting the deployment shape.
 
 image:
-  repository: ghcr.io/nexu-io/od
+  repository: ghcr.io/exc33ded/od
   tag: edge
   pullPolicy: IfNotPresent
 
