@@ -158,6 +158,15 @@ export function applyManualEditPatch(source: string, patch: ManualEditPatch): Ma
         error: 'error' in replaced ? replaced.error : 'Could not replace element HTML.',
       };
     }
+  } else if (patch.kind === 'move-element') {
+    const target = findEditableElement(doc, patch.targetId);
+    if (!target) {
+      return { ok: false, source, error: `Move target not found: ${patch.targetId}` };
+    }
+    if (el === target || el.contains(target)) {
+      return { ok: false, source, error: 'Cannot move an element relative to itself or its own descendant.' };
+    }
+    target.insertAdjacentElement(patch.position === 'before' ? 'beforebegin' : 'afterend', el);
   } else if (patch.kind === 'remove-element') {
     if (!el.parentElement) {
       return { ok: false, source, error: 'Cannot remove the root element.' };

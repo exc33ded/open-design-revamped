@@ -72,6 +72,7 @@ export type ManualEditPatch =
   | { id: string; kind: 'set-link'; text: string; href: string }
   | { id: string; kind: 'set-image'; src: string; alt: string }
   | { id: string; kind: 'remove-element' }
+  | { id: string; kind: 'move-element'; targetId: string; position: 'before' | 'after' }
   | { kind: 'set-token'; token: string; value: string }
   | { id: string; kind: 'set-style'; styles: Partial<ManualEditStyles> }
   | { id: string; kind: 'set-attributes'; attributes: Record<string, string> }
@@ -114,6 +115,13 @@ export interface ManualEditPreviewAppliedMessage {
   error?: string;
 }
 
+export interface ManualEditMoveMessage {
+  type: 'od-edit-move';
+  id: string;
+  targetId: string;
+  position: 'before' | 'after';
+}
+
 export interface ManualEditTextCommitMessage {
   type: 'od-edit-text-commit';
   id: string;
@@ -134,6 +142,7 @@ export type ManualEditBridgeMessage =
   | ManualEditHoverMessage
   | ManualEditBackgroundMessage
   | ManualEditPreviewAppliedMessage
+  | ManualEditMoveMessage
   | ManualEditTextCommitMessage
   | ManualEditTextSessionMessage;
 

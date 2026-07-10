@@ -8081,6 +8081,18 @@ function HtmlViewer({
         }
         return;
       }
+      if (data.type === 'od-edit-move') {
+        // The iframe already moved the node optimistically; persist the same
+        // move to source. On failure applyManualEdit surfaces the error and the
+        // next srcdoc rebuild restores the pre-drag order.
+        void applyManualEdit({
+          id: String(data.id),
+          kind: 'move-element',
+          targetId: String(data.targetId),
+          position: data.position === 'before' ? 'before' : 'after',
+        }, 'Move element');
+        return;
+      }
       if (data.type === 'od-edit-text-commit') {
         // Keep the apply promise reachable so any teardown (host- or
         // iframe-initiated) can await it and honor a failed save before tearing

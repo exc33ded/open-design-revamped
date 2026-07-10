@@ -222,6 +222,41 @@ describe('manual edit source patches', () => {
     expect(result.source).toContain('data-od-id="app-root"');
   });
 
+  it('moves an element before or after a sibling and persists the new order', () => {
+    const source = [
+      '<!doctype html><html><body>',
+      '<section data-od-id="hero">Hero</section>',
+      '<section data-od-id="features">Features</section>',
+      '<section data-od-id="footer">Footer</section>',
+      '</body></html>',
+    ].join('');
+    const moved = applyManualEditPatch(source, {
+      kind: 'move-element', id: 'footer', targetId: 'hero', position: 'before',
+    });
+    expect(moved.ok).toBe(true);
+    expect(moved.source.indexOf('data-od-id="footer"')).toBeLessThan(moved.source.indexOf('data-od-id="hero"'));
+
+    const after = applyManualEditPatch(moved.source, {
+      kind: 'move-element', id: 'hero', targetId: 'features', position: 'after',
+    });
+    expect(after.ok).toBe(true);
+    expect(after.source.indexOf('data-od-id="features"')).toBeLessThan(after.source.indexOf('data-od-id="hero"'));
+  });
+
+  it('rejects moving an element relative to its own descendant', () => {
+    const source = [
+      '<!doctype html><html><body>',
+      '<section data-od-id="outer"><div data-od-id="inner">Inner</div></section>',
+      '<section data-od-id="other">Other</section>',
+      '</body></html>',
+    ].join('');
+    const result = applyManualEditPatch(source, {
+      kind: 'move-element', id: 'outer', targetId: 'inner', position: 'after',
+    });
+    expect(result.ok).toBe(false);
+    expect(result.error).toContain('Cannot move');
+  });
+
   it('addresses unannotated elements with generated DOM path ids', () => {
     const result = applyManualEditPatch(baseSource, { kind: 'set-text', id: 'path-0-7', value: 'Path target' });
 

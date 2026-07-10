@@ -576,8 +576,74 @@ export function buildManualEditBridge(enabled: boolean): string {
       return;
     }
   });
+  // Drag-to-move: press on an element and drag past a small threshold to pick
+  // it up; drop before/after the sibling-level element under the pointer. The
+  // optimistic DOM move keeps the preview honest while the host persists the
+  // same move to source via the 'move-element' manual-edit patch.
+  var dragState = null;
+  var suppressNextClick = false;
+  function clearDropIndicator(){
+    var marked = document.querySelectorAll('[data-od-drop-pos]');
+    for (var i = 0; i < marked.length; i++) marked[i].removeAttribute('data-od-drop-pos');
+  }
+  function dropCandidate(ev, dragEl){
+    var under = document.elementFromPoint(ev.clientX, ev.clientY);
+    var el = under && under.closest ? closestTarget({ target: under }) : null;
+    while (el && (el === dragEl || dragEl.contains(el))) el = closestTarget({ target: el.parentElement });
+    if (!el || el === document.body) return null;
+    var rect = el.getBoundingClientRect();
+    var position = (ev.clientY - rect.top) < rect.height / 2 ? 'before' : 'after';
+    return { el: el, position: position };
+  }
+  document.addEventListener('pointerdown', function(ev){
+    if (!enabled || ev.button !== 0) return;
+    if (ev.target && ev.target.closest && ev.target.closest('[data-od-editing="true"]')) return;
+    var el = closestTarget(ev);
+    if (!el) return;
+    dragState = { el: el, x: ev.clientX, y: ev.clientY, active: false };
+  }, true);
+  document.addEventListener('pointermove', function(ev){
+    if (!enabled || !dragState) return;
+    if (!dragState.active) {
+      if (Math.abs(ev.clientX - dragState.x) + Math.abs(ev.clientY - dragState.y) < 8) return;
+      dragState.active = true;
+      if (activeTextEdit) finishActiveTextEdit(true);
+      dragState.el.setAttribute('data-od-dragging', 'true');
+      document.documentElement.setAttribute('data-od-drag-active', 'true');
+    }
+    ev.preventDefault();
+    clearDropIndicator();
+    var cand = dropCandidate(ev, dragState.el);
+    if (cand) cand.el.setAttribute('data-od-drop-pos', cand.position);
+  }, true);
+  document.addEventListener('pointerup', function(ev){
+    if (!enabled || !dragState) return;
+    var state = dragState;
+    dragState = null;
+    if (!state.active) return;
+    suppressNextClick = true;
+    state.el.removeAttribute('data-od-dragging');
+    document.documentElement.removeAttribute('data-od-drag-active');
+    clearDropIndicator();
+    var cand = dropCandidate(ev, state.el);
+    if (!cand || cand.el === state.el) return;
+    var sourceId = stableId(state.el);
+    var targetId = stableId(cand.el);
+    if (!sourceId || !targetId || sourceId === targetId) return;
+    try {
+      cand.el.insertAdjacentElement(cand.position === 'before' ? 'beforebegin' : 'afterend', state.el);
+    } catch (_) { return; }
+    postTargets();
+    window.parent.postMessage({ type: 'od-edit-move', id: sourceId, targetId: targetId, position: cand.position }, '*');
+  }, true);
   document.addEventListener('click', function(ev){
     if (!enabled) return;
+    if (suppressNextClick) {
+      suppressNextClick = false;
+      ev.preventDefault();
+      ev.stopPropagation();
+      return;
+    }
     if (ev.target && ev.target.closest && ev.target.closest('[data-od-editing="true"]')) return;
     ev.preventDefault();
     ev.stopPropagation();
@@ -647,5 +713,9 @@ html[data-od-edit-mode] [data-od-editing="true"] {
   background: rgba(37, 99, 235, 0.06);
   cursor: text !important;
 }
+html[data-od-drag-active] body * { cursor: grabbing !important; user-select: none !important; }
+html[data-od-edit-mode] [data-od-dragging] { opacity: 0.45; outline: 2px dashed #2563eb !important; }
+html[data-od-edit-mode] [data-od-drop-pos="before"] { box-shadow: 0 -3px 0 0 #16a34a !important; }
+html[data-od-edit-mode] [data-od-drop-pos="after"] { box-shadow: 0 3px 0 0 #16a34a !important; }
 </style>`;
 }
