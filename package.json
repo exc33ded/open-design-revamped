@@ -10,6 +10,7 @@
     "od": "./apps/daemon/bin/od.mjs"
   },
   "scripts": {
+    "dev": "node dev.mjs",
     "tools-dev": "pnpm exec tools-dev",
     "typecheck": "pnpm -r --workspace-concurrency=4 --if-present run typecheck"
   },

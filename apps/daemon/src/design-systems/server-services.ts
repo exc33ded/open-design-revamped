@@ -184,11 +184,10 @@ export function createDesignSystemServerServices({
     const systems = await listAllDesignSystems();
     const summary = systems.find((system) => system.id === id);
     if (!summary) {
-      return {
-        ok: false,
-        code: 'DESIGN_SYSTEM_NOT_FOUND',
-        message: 'design system not found',
-      };
+      // ponytail: slim fork removed the bundled design-systems catalog, so a
+      // stale client selection must degrade to "none" instead of failing the
+      // whole project create.
+      return { ok: true, id: null };
     }
     if (!isProjectUsableDesignSystem(summary)) {
       return {
@@ -214,11 +213,9 @@ export function createDesignSystemServerServices({
     const allSkills = await listAllSkillLikeEntries();
     const resolved = skills.findSkillById(allSkills, id);
     if (!resolved) {
-      return {
-        ok: false,
-        code: 'SKILL_NOT_FOUND',
-        message: 'skill not found',
-      };
+      // ponytail: slim fork removed bundled skills; stale client skill picks
+      // degrade to no-skill instead of blocking project creation.
+      return { ok: true, id: null };
     }
     return { ok: true, id: resolved.id };
   }
