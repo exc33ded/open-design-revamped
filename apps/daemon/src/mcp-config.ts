@@ -508,6 +508,14 @@ export function buildOpenCodeMcpConfigContent(
         : {};
     config.permission = {
       ...priorPermission,
+      // Headless runs cannot answer permission prompts — a user-global
+      // `"edit": "ask"` in ~/.config/opencode/opencode.json would make
+      // OpenCode auto-reject the write and the run dies as empty_output.
+      // Env-content config takes precedence over the global file, so allow
+      // the core tools for daemon-managed runs only.
+      edit: 'allow',
+      bash: 'allow',
+      webfetch: 'allow',
       external_directory: externalDirectory,
     };
   }

@@ -115,7 +115,10 @@ export async function createProject(input: {
       let message = 'Could not create project';
       try {
         const body = await resp.json() as { error?: unknown };
-        if (
+        // Daemon errors are either {error: "string"} or {error: {message}}.
+        if (typeof body.error === 'string' && body.error.trim()) {
+          message = body.error;
+        } else if (
           body.error &&
           typeof body.error === 'object' &&
           'message' in body.error &&

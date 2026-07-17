@@ -11,7 +11,6 @@ import { kimiAgentDef } from './defs/kimi.js';
 import { cursorAgentDef } from './defs/cursor-agent.js';
 import { qwenAgentDef } from './defs/qwen.js';
 import { qoderAgentDef } from './defs/qoder.js';
-import { copilotAgentDef } from './defs/copilot.js';
 import { ampAgentDef } from './defs/amp.js';
 import { piAgentDef } from './defs/pi.js';
 import { kiroAgentDef } from './defs/kiro.js';
@@ -40,7 +39,8 @@ const BASE_AGENT_DEFS: RuntimeAgentDef[] = [
   cursorAgentDef,
   qwenAgentDef,
   qoderAgentDef,
-  copilotAgentDef,
+  // ponytail: copilot def removed — VS Code Insiders ships a `copilot` shim
+  // that interactively prompts "Install GitHub Copilot CLI?" on every probe.
   ampAgentDef,
   piAgentDef,
   kiroAgentDef,

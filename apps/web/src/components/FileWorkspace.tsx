@@ -3780,7 +3780,6 @@ export function FileWorkspace({
             projectId={projectId}
             rootDirName={rootDirName ?? t('workspace.allProjectFiles')}
             reloading={reloading}
-            running={Boolean(streaming)}
             files={visibleFiles}
             folders={projectFolders}
             liveArtifacts={liveArtifactEntries}
