@@ -638,6 +638,17 @@ export function DesignFilesPanel({
         >
           {relativeTime(f.mtime, t)}
         </span>
+        <button
+          type="button"
+          className="df-row-open"
+          style={isHovered || active ? { opacity: 1 } : undefined}
+          onClick={(e) => {
+            e.stopPropagation();
+            onOpenFile(f.name);
+          }}
+        >
+          Open
+        </button>
         <span
           data-testid={`design-file-menu-${f.name}`}
           className="df-row-menu"

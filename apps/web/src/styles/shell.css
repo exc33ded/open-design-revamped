@@ -1498,7 +1498,13 @@ a.avatar-item:visited {
   min-width: 8px;
   height: 100%;
   cursor: col-resize;
-  background: transparent;
+  /* Always-visible centered grip so the resize affordance is discoverable */
+  background:
+    linear-gradient(
+      color-mix(in srgb, var(--text-muted) 55%, transparent),
+      color-mix(in srgb, var(--text-muted) 55%, transparent)
+    )
+    center / 3px 44px no-repeat;
   touch-action: none;
 }
 .split-resize-handle::before {
@@ -1528,7 +1534,9 @@ a.avatar-item:visited {
 .split-resize-handle:hover,
 .split-resize-handle:focus-visible,
 .split.is-resizing-chat .split-resize-handle {
-  background: transparent;
+  background:
+    linear-gradient(var(--accent), var(--accent))
+    center / 3px 44px no-repeat;
 }
 .split-resize-handle:hover::after,
 .split-resize-handle:focus-visible::after,
