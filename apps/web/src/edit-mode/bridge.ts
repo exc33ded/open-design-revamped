@@ -384,13 +384,111 @@ export function buildManualEditBridge(enabled: boolean): string {
   function clearSelectedTarget(){
     var selected = document.querySelectorAll('[data-od-edit-selected]');
     for (var i = 0; i < selected.length; i++) selected[i].removeAttribute('data-od-edit-selected');
+    hideResizeOverlay();
   }
   function setSelectedTarget(id){
     clearSelectedTarget();
-    if (!id) return;
+    if (!id) { hideResizeOverlay(); return; }
     var el = findById(id);
-    if (el) el.setAttribute('data-od-edit-selected', 'true');
+    if (el) {
+      el.setAttribute('data-od-edit-selected', 'true');
+      attachResizeOverlay(el);
+    } else {
+      hideResizeOverlay();
+    }
   }
+  // Resize handles: an absolutely-positioned overlay tracks the selected
+  // element; dragging a handle live-updates inline width/height, and pointerup
+  // posts 'od-edit-resize' so the host persists the same values via the
+  // 'set-style' source patch (mirrors the drag-to-move optimistic pattern).
+  var resizeOverlay = null, resizeTargetEl = null, resizeState = null;
+  function ensureResizeOverlay(){
+    if (resizeOverlay) return resizeOverlay;
+    resizeOverlay = document.createElement('div');
+    resizeOverlay.setAttribute('data-od-edit-bridge', 'true');
+    resizeOverlay.setAttribute('data-od-resize-overlay', 'true');
+    ['e','s','se'].forEach(function(dir){
+      var h = document.createElement('div');
+      h.setAttribute('data-od-resize-handle', dir);
+      h.addEventListener('pointerdown', function(ev){ startResize(ev, dir); }, true);
+      resizeOverlay.appendChild(h);
+    });
+    document.body.appendChild(resizeOverlay);
+    return resizeOverlay;
+  }
+  function positionResizeOverlay(){
+    if (!resizeTargetEl || !resizeOverlay) return;
+    if (!resizeTargetEl.isConnected) { hideResizeOverlay(); return; }
+    var r = resizeTargetEl.getBoundingClientRect();
+    resizeOverlay.style.display = 'block';
+    resizeOverlay.style.left = (r.left + window.scrollX) + 'px';
+    resizeOverlay.style.top = (r.top + window.scrollY) + 'px';
+    resizeOverlay.style.width = r.width + 'px';
+    resizeOverlay.style.height = r.height + 'px';
+  }
+  function hideResizeOverlay(){
+    if (resizeOverlay) resizeOverlay.style.display = 'none';
+    resizeTargetEl = null;
+  }
+  function attachResizeOverlay(el){
+    ensureResizeOverlay();
+    resizeTargetEl = el;
+    positionResizeOverlay();
+  }
+  function startResize(ev, dir){
+    if (!enabled || !resizeTargetEl) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    var r = resizeTargetEl.getBoundingClientRect();
+    // Scope the resize to the segment: a flex child gets flex:0 0 auto so
+    // siblings keep their own sizes instead of redistributing; height drags
+    // adjust min-height so content never clips and sections below only move
+    // by the actual delta; width is capped at 100% so nothing overflows the
+    // page horizontally.
+    var parent = resizeTargetEl.parentElement;
+    var parentDisplay = parent ? getComputedStyle(parent).display : '';
+    var isFlexChild = parentDisplay.indexOf('flex') !== -1;
+    var hadInlineHeight = !!resizeTargetEl.style.height;
+    resizeState = { dir: dir, x: ev.clientX, y: ev.clientY, w: r.width, h: r.height, flexChild: isFlexChild, inlineHeight: hadInlineHeight };
+    document.documentElement.setAttribute('data-od-resize-active', dir);
+  }
+  document.addEventListener('pointermove', function(ev){
+    if (!resizeState || !resizeTargetEl) return;
+    ev.preventDefault();
+    ev.stopPropagation();
+    if (resizeState.dir !== 's') {
+      var w = resizeState.w + (ev.clientX - resizeState.x);
+      resizeTargetEl.style.width = Math.max(16, Math.round(w)) + 'px';
+      resizeTargetEl.style.maxWidth = '100%';
+      if (resizeState.flexChild) resizeTargetEl.style.flex = '0 0 auto';
+    }
+    if (resizeState.dir !== 'e') {
+      var h = Math.max(16, Math.round(resizeState.h + (ev.clientY - resizeState.y)));
+      resizeTargetEl.style.minHeight = h + 'px';
+      if (resizeState.inlineHeight) resizeTargetEl.style.height = h + 'px';
+    }
+    positionResizeOverlay();
+  }, true);
+  document.addEventListener('pointerup', function(ev){
+    if (!resizeState || !resizeTargetEl) return;
+    var state = resizeState;
+    resizeState = null;
+    document.documentElement.removeAttribute('data-od-resize-active');
+    suppressNextClick = true;
+    var styles = {};
+    if (state.dir !== 's') {
+      styles.width = resizeTargetEl.style.width;
+      styles.maxWidth = resizeTargetEl.style.maxWidth;
+      if (state.flexChild) styles.flex = resizeTargetEl.style.flex;
+    }
+    if (state.dir !== 'e') {
+      styles.minHeight = resizeTargetEl.style.minHeight;
+      if (state.inlineHeight) styles.height = resizeTargetEl.style.height;
+    }
+    window.parent.postMessage({ type: 'od-edit-resize', id: stableId(resizeTargetEl), styles: styles }, '*');
+  }, true);
+  window.addEventListener('scroll', positionResizeOverlay, true);
+  window.addEventListener('resize', positionResizeOverlay);
   function closestTarget(event){
     annotateBrandKitRuntimeTargets();
     var el = event.target;
@@ -714,6 +812,26 @@ html[data-od-edit-mode] [data-od-editing="true"] {
   cursor: text !important;
 }
 html[data-od-drag-active] body * { cursor: grabbing !important; user-select: none !important; }
+[data-od-resize-overlay] {
+  position: absolute;
+  display: none;
+  z-index: 2147483000;
+  pointer-events: none;
+}
+[data-od-resize-handle] {
+  position: absolute;
+  width: 10px;
+  height: 10px;
+  background: #fff;
+  border: 2px solid #2563eb;
+  border-radius: 2px;
+  pointer-events: auto;
+  box-sizing: border-box;
+}
+[data-od-resize-handle="e"] { right: -5px; top: calc(50% - 5px); cursor: ew-resize; }
+[data-od-resize-handle="s"] { bottom: -5px; left: calc(50% - 5px); cursor: ns-resize; }
+[data-od-resize-handle="se"] { right: -5px; bottom: -5px; cursor: nwse-resize; }
+html[data-od-resize-active] body * { user-select: none !important; }
 html[data-od-edit-mode] [data-od-dragging] { opacity: 0.45; outline: 2px dashed #2563eb !important; }
 html[data-od-edit-mode] [data-od-drop-pos="before"] { box-shadow: 0 -3px 0 0 #16a34a !important; }
 html[data-od-edit-mode] [data-od-drop-pos="after"] { box-shadow: 0 3px 0 0 #16a34a !important; }

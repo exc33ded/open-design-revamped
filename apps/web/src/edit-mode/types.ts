@@ -23,8 +23,10 @@ export interface ManualEditStyles {
   lineHeight: string;
   letterSpacing: string;
   width: string;
+  maxWidth: string;
   height: string;
   minHeight: string;
+  flex: string;
   gap: string;
   flexDirection: string;
   justifyContent: string;
@@ -122,6 +124,12 @@ export interface ManualEditMoveMessage {
   position: 'before' | 'after';
 }
 
+export interface ManualEditResizeMessage {
+  type: 'od-edit-resize';
+  id: string;
+  styles: Partial<Pick<ManualEditStyles, 'width' | 'maxWidth' | 'height' | 'minHeight' | 'flex'>>;
+}
+
 export interface ManualEditTextCommitMessage {
   type: 'od-edit-text-commit';
   id: string;
@@ -143,12 +151,13 @@ export type ManualEditBridgeMessage =
   | ManualEditBackgroundMessage
   | ManualEditPreviewAppliedMessage
   | ManualEditMoveMessage
+  | ManualEditResizeMessage
   | ManualEditTextCommitMessage
   | ManualEditTextSessionMessage;
 
 export const MANUAL_EDIT_STYLE_PROPS: readonly (keyof ManualEditStyles)[] = [
   'fontFamily', 'fontSize', 'fontWeight', 'color', 'textAlign', 'lineHeight', 'letterSpacing',
-  'width', 'height', 'minHeight',
+  'width', 'maxWidth', 'height', 'minHeight', 'flex',
   'gap', 'flexDirection', 'justifyContent', 'alignItems',
   'backgroundColor', 'opacity',
   'padding', 'paddingTop', 'paddingRight', 'paddingBottom', 'paddingLeft',
