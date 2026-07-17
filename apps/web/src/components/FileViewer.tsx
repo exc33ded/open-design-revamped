@@ -8093,6 +8093,21 @@ function HtmlViewer({
         }, 'Move element');
         return;
       }
+      if (data.type === 'od-edit-resize') {
+        // The iframe already applied the inline sizes optimistically; persist
+        // the same values through the set-style source patch. Width rides with
+        // maxWidth/flex (scoped resize), height rides as minHeight.
+        const allowed = ['width', 'maxWidth', 'height', 'minHeight', 'flex'] as const;
+        const styles: Partial<Record<(typeof allowed)[number], string>> = {};
+        for (const key of allowed) {
+          const value = data.styles?.[key];
+          if (typeof value === 'string' && value) styles[key] = value;
+        }
+        if (Object.keys(styles).length > 0) {
+          void applyManualEdit({ id: String(data.id), kind: 'set-style', styles }, 'Resize element');
+        }
+        return;
+      }
       if (data.type === 'od-edit-text-commit') {
         // Keep the apply promise reachable so any teardown (host- or
         // iframe-initiated) can await it and honor a failed save before tearing

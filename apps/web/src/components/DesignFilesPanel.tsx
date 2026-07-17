@@ -994,6 +994,16 @@ export function DesignFilesPanel({
                 >
                   <span>{t('designFiles.delete')}</span>
                 </button>
+                <button
+                  type="button"
+                  className="df-batch-clear"
+                  data-testid="design-files-select-all"
+                  onClick={() =>
+                    setSelected(new Set(sections.flatMap(([, sectionFiles]) => sectionFiles.map((f) => f.name))))
+                  }
+                >
+                  Select all
+                </button>
                 <button type="button" className="df-batch-clear" onClick={clearSelection}>
                   {t('designFiles.clearSelection')}
                 </button>
