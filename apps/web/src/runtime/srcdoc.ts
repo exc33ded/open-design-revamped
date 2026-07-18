@@ -435,11 +435,34 @@ function injectSnapshotBridge(doc: string): string {
       var value = computed.getPropertyValue(prop);
       if (value) style += prop + ':' + value + ';';
     }
+    // SVG loaded through <img> may not fetch network resources, so any
+    // remaining http(s) url() (background-image etc.) can stall or blank the
+    // whole foreignObject paint. Neutralize them; the element keeps its
+    // computed box + background-color.
+    style = style.replace(/url\\((['"]?)https?:[^)]*\\)/gi, 'none');
     target.setAttribute('style', style);
+  }
+  var BLANK_IMG = 'data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==';
+  function inlineImageSource(source){
+    var src = source.currentSrc || source.src || '';
+    if (src.indexOf('data:') === 0) return src;
+    try {
+      var c = document.createElement('canvas');
+      c.width = Math.max(1, source.naturalWidth || 1);
+      c.height = Math.max(1, source.naturalHeight || 1);
+      var cx = c.getContext('2d');
+      if (!cx) return BLANK_IMG;
+      cx.drawImage(source, 0, 0);
+      return c.toDataURL('image/png');
+    } catch (_) {
+      // Cross-origin image without CORS taints the canvas — keep the box,
+      // drop the pixels, so one hotlinked image can't sink the capture.
+      return BLANK_IMG;
+    }
   }
   function syncElementState(source, target){
     var tag = source.tagName ? source.tagName.toLowerCase() : '';
-    if (tag === 'img' && source.currentSrc) target.setAttribute('src', source.currentSrc);
+    if (tag === 'img') target.setAttribute('src', inlineImageSource(source));
     if (tag === 'input' || tag === 'textarea') target.setAttribute('value', source.value || '');
     if (tag === 'canvas') {
       try {
