@@ -13,7 +13,7 @@ function dialogError(message: string, code: string | number): Error & { code: st
 
 describe('native folder dialog helpers', () => {
   it('builds the Windows folder picker command with STA mode', () => {
-    const command = buildWindowsFolderDialogCommand();
+    const command = buildWindowsFolderDialogCommand('powershell.exe');
 
     expect(command.command).toBe('powershell.exe');
     expect(command.args).toContain('-NoProfile');
@@ -21,8 +21,18 @@ describe('native folder dialog helpers', () => {
     expect(command.args).toContain('-Command');
   });
 
+  it('uses pwsh (PowerShell 7) when it is the resolved shell for the modern picker', () => {
+    const command = buildWindowsFolderDialogCommand('pwsh');
+
+    expect(command.command).toBe('pwsh');
+    // Same script/args — pwsh renders the modern Windows 11 folder dialog from
+    // the identical FolderBrowserDialog call because it runs on .NET 5+.
+    expect(command.args).toContain('-Sta');
+    expect(command.args).toContain('-Command');
+  });
+
   it('creates a topmost owner form for the Windows dialog', () => {
-    const script = buildWindowsFolderDialogCommand().args[3] ?? '';
+    const script = buildWindowsFolderDialogCommand('powershell.exe').args[3] ?? '';
 
     expect(script).toContain('$owner = New-Object System.Windows.Forms.Form;');
     expect(script).toContain('$owner.TopMost = $true;');
@@ -31,7 +41,7 @@ describe('native folder dialog helpers', () => {
   });
 
   it('passes the owner form into the Windows folder picker', () => {
-    const script = buildWindowsFolderDialogCommand().args[3] ?? '';
+    const script = buildWindowsFolderDialogCommand('powershell.exe').args[3] ?? '';
 
     expect(script).toContain('$dialog = New-Object System.Windows.Forms.FolderBrowserDialog;');
     expect(script).toContain('$dialog.ShowNewFolderButton = $true;');

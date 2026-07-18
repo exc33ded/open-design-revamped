@@ -1,6 +1,36 @@
+import { spawnSync } from 'node:child_process';
+
 export interface NativeFolderDialogCommand {
   command: string;
   args: string[];
+}
+
+// Prefer PowerShell 7+ (`pwsh`) when it's installed. Windows PowerShell 5.1
+// (`powershell.exe`) runs on .NET Framework, whose `FolderBrowserDialog` has no
+// modern-dialog upgrade path — it always renders the legacy Windows-95-style
+// folder tree, which users find hard to navigate and which is flaky at
+// returning `SelectedPath`. pwsh runs on .NET 5+, where the SAME
+// `FolderBrowserDialog` renders the modern Windows 11 folder picker and returns
+// reliably. Detection is a one-shot cheap probe; the result is cached so a
+// user opening the picker repeatedly doesn't re-spawn a probe each time.
+let cachedWindowsShell: string | undefined;
+
+export function resolveWindowsPowerShell(): string {
+  if (cachedWindowsShell) return cachedWindowsShell;
+  try {
+    const probe = spawnSync('pwsh', ['-NoProfile', '-Command', '$PSVersionTable.PSVersion.Major'], {
+      timeout: 5_000,
+      windowsHide: true,
+    });
+    if (probe.status === 0) {
+      cachedWindowsShell = 'pwsh';
+      return cachedWindowsShell;
+    }
+  } catch {
+    /* pwsh not installed — fall back to Windows PowerShell */
+  }
+  cachedWindowsShell = 'powershell.exe';
+  return cachedWindowsShell;
 }
 
 function errorCode(error: unknown): unknown {
@@ -41,9 +71,11 @@ const WINDOWS_FOLDER_DIALOG_SCRIPT = [
   '}',
 ].join(' ');
 
-export function buildWindowsFolderDialogCommand(): NativeFolderDialogCommand {
+export function buildWindowsFolderDialogCommand(
+  shell: string = resolveWindowsPowerShell(),
+): NativeFolderDialogCommand {
   return {
-    command: 'powershell.exe',
+    command: shell,
     args: ['-NoProfile', '-Sta', '-Command', WINDOWS_FOLDER_DIALOG_SCRIPT],
   };
 }
