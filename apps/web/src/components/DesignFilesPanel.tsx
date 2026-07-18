@@ -780,6 +780,19 @@ export function DesignFilesPanel({
 
   const fileActions = (
     <div className="df-actions">
+      {sections.length > 0 ? (
+        <button
+          type="button"
+          data-testid="design-files-select-all-topbar"
+          onClick={() =>
+            setSelected(new Set(sections.flatMap(([, sectionFiles]) => sectionFiles.map((f) => f.name))))
+          }
+          title="Select all files"
+        >
+          <Icon name="check" size={13} />
+          <span>Select all</span>
+        </button>
+      ) : null}
       {LIBRARY_UI_VISIBLE && onSelectFromLibrary ? (
         <button
           type="button"

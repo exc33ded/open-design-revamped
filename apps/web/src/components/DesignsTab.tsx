@@ -607,6 +607,16 @@ export function DesignsTab({
 							</span>
 							<button
 								type="button"
+								className="designs-select-toggle"
+								data-testid="designs-select-all"
+								onClick={() =>
+									setSelected(new Set(filteredProjects.map((p) => p.project.id)))
+								}
+							>
+								Select all
+							</button>
+							<button
+								type="button"
 								className="designs-select-delete"
 								disabled={selected.size === 0}
 								onClick={handleBatchDelete}
