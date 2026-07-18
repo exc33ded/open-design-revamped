@@ -16,6 +16,8 @@ export function homeHeroChipLabel(chipId: string, t: Translate): string {
   switch (chipId) {
     case 'prototype': return t('homeHero.chip.prototype');
     case 'web-clone': return t('homeHero.chip.webClone');
+    // ponytail: inline English until a Dict key lands across locale files.
+    case 'connect-backend': return 'Connect backend';
     case 'wireframe': return t('homeHero.chip.wireframe');
     case 'mobile': return t('homeHero.chip.mobile');
     case 'live-artifact': return t('homeHero.chip.liveArtifact');

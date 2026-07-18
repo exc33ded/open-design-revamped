@@ -146,6 +146,28 @@ export const HOME_HERO_CHIPS: ReadonlyArray<HomeHeroChip> = [
     },
   },
   {
+    id: 'connect-backend',
+    label: 'Connect backend',
+    icon: 'file-code',
+    group: 'create',
+    description: 'Frontend for your backend code',
+    hint: 'Link your backend code folder; the agent analyzes it, interviews you on stack and pages, then builds a frontend wired to the real API.',
+    // Backend-connect is its own creation workflow (analyze a linked backend
+    // folder → BACKEND.md → question-form interview → wired frontend), so it
+    // binds the bundled `example-backend-connect` skill. Stored as
+    // `kind: 'prototype'` for preview behavior; `intent: 'backend-connect'`
+    // routes the scenario plugin (see contracts scenario-defaults).
+    action: {
+      kind: 'apply-scenario',
+      pluginId: 'example-backend-connect',
+      projectKind: 'prototype',
+      projectMetadata: {
+        kind: 'prototype',
+        intent: 'backend-connect',
+      },
+    },
+  },
+  {
     id: 'wireframe',
     label: 'Wireframe',
     icon: 'layout',
@@ -391,6 +413,7 @@ export function chipsForGroup(group: ChipGroup): HomeHeroChip[] {
 export const CREATE_RAIL_ORDER = [
   'web-clone',
   'deck',
+  'connect-backend',
   'prototype',
   'wireframe',
   'mobile',
@@ -409,7 +432,9 @@ export const CREATE_RAIL_ORDER = [
 // when keeping the teaser chips to a single tidy row. Website clone starts
 // from someone else's site rather than the user's design system, so it stays
 // off the design-system teaser too.
-const ONBOARDING_ARTIFACT_OMIT = new Set<string>(['web-clone', 'video', 'audio']);
+// Connect backend starts from the user's backend code rather than a design
+// system, so it stays off the design-system teaser like Website clone.
+const ONBOARDING_ARTIFACT_OMIT = new Set<string>(['web-clone', 'connect-backend', 'video', 'audio']);
 
 // The artifact chips shown on the onboarding "build a design system" step — a
 // curated single-row subset of the create rail. Derived from CREATE_RAIL_ORDER

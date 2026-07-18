@@ -183,6 +183,8 @@ type ProjectMetadata = {
   brandId?: string | null;
   brandSourceUrl?: string | null;
   brandDesignSystemId?: string | null;
+  backendDir?: string | null;
+  linkedDirs?: string[] | null;
   promptTemplate?: {
     id?: string | null;
     surface?: 'image' | 'video' | null;
@@ -1287,6 +1289,17 @@ function renderMetadataBlock(
     lines.push(
       '- **connector-source rule**: if the user names a connector/source (for example Notion) and daemon connector tools are available, list connectors before asking where the data comes from. When the named connector is `connected`, use its read-only tools and ask follow-up questions only for missing topic/page/database details, multiple equally plausible matches, or an unconnected/missing connector.',
     );
+  }
+  if (metadata.intent === 'backend-connect') {
+    lines.push(
+      '- **intent**: backend-connect — the user chose Connect backend. Follow the backend-connect skill workflow strictly: (1) analyze the linked backend code folder in depth and write `BACKEND.md` (stack, how to run, base URL & auth, every endpoint with real request/response shapes, data models, suggested pages, CORS status); (2) present the understanding in chat and grill the user with a `<question-form>` covering frontend stack (Vite+React+shadcn / Next.js / plain HTML+CSS+JS), pages (pre-suggested from the analysis), look & feel, base URL confirmation, and auth handling; (3) only after answers, generate the chosen frontend wired to the real endpoints through a single API config module. Never invent endpoints that are not in the analyzed source.',
+    );
+    const backendDir = metadata.backendDir ?? metadata.linkedDirs?.[0];
+    if (backendDir) {
+      lines.push(`- **backendDir**: ${backendDir} — the connected backend code folder (readable via linked dirs).`);
+    } else {
+      lines.push('- **backendDir**: (unknown — no backend folder linked yet: ask the user to link their backend code folder with the working-directory picker before doing anything else)');
+    }
   }
   if (metadata.kind === 'brand') {
     lines.push(

@@ -1,0 +1,77 @@
+{
+  "$schema": "https://open-design.ai/schemas/plugin.v1.json",
+  "specVersion": "1.0.0",
+  "name": "example-backend-connect",
+  "title": "Connect Backend",
+  "title_i18n": {
+    "en": "Connect Backend",
+    "zh-CN": "连接后端",
+    "zh-TW": "連接後端"
+  },
+  "version": "0.1.0",
+  "description": "Connect a local backend code folder in any language, analyze its endpoints, models, and auth into BACKEND.md, interview the user about stack and pages via question forms, then generate a frontend wired to the real API.",
+  "description_i18n": {
+    "en": "Connect a local backend code folder in any language, analyze its endpoints, models, and auth into BACKEND.md, interview the user about stack and pages via question forms, then generate a frontend wired to the real API.",
+    "zh-CN": "连接任意语言的本地后端代码文件夹，分析其端点、数据模型和鉴权并写入 BACKEND.md，通过问题表单确认技术栈与页面，然后生成对接真实 API 的前端。",
+    "zh-TW": "連接任意語言的本機後端程式碼資料夾，分析其端點、資料模型與鑑權並寫入 BACKEND.md，透過問題表單確認技術棧與頁面，然後生成對接真實 API 的前端。"
+  },
+  "license": "MIT",
+  "author": {
+    "name": "Open Design",
+    "url": "https://github.com/nexu-io"
+  },
+  "homepage": "https://github.com/nexu-io/open-design/tree/main/plugins/_official/examples/backend-connect",
+  "tags": [
+    "example",
+    "first-party",
+    "prototype",
+    "web",
+    "backend",
+    "backend-connect",
+    "api",
+    "frontend-generation",
+    "full-stack"
+  ],
+  "compat": {
+    "agentSkills": [
+      {
+        "path": "./SKILL.md"
+      }
+    ]
+  },
+  "od": {
+    "kind": "scenario",
+    "taskKind": "new-generation",
+    "mode": "prototype",
+    "scenario": "backend-connect",
+    "surface": "web",
+    "useCase": {
+      "query": {
+        "en": "Connect my backend code folder and build a frontend for it. Analyze the backend in depth, write BACKEND.md, show me your understanding, ask me about stack (Vite/React/shadcn, Next.js, or plain HTML), pages, and look via question forms, then generate a frontend wired to the real endpoints.",
+        "zh-CN": "连接我的后端代码文件夹并为它构建前端。深入分析后端，写出 BACKEND.md，展示你的理解，通过问题表单询问技术栈（Vite/React/shadcn、Next.js 或纯 HTML）、页面和外观，然后生成对接真实端点的前端。"
+      }
+    },
+    "context": {
+      "skills": [
+        {
+          "path": "./SKILL.md"
+        }
+      ]
+    },
+    "pipeline": {
+      "stages": [
+        {
+          "id": "generate",
+          "atoms": [
+            "file-write"
+          ]
+        }
+      ]
+    },
+    "capabilities": [
+      "prompt:inject",
+      "fs:write",
+      "shell"
+    ]
+  }
+}

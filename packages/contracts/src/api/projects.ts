@@ -102,7 +102,12 @@ export interface ProjectMetadata {
   // `other`. `webgl-experience` and `worker-visualizer`: the powered-preview
   // GPU / off-main-thread scenario cards — analytics-only discriminators for the
   // powered-artifact chips.
-  intent?: 'live-artifact' | 'web-clone' | 'document' | 'webgl-experience' | 'worker-visualizer';
+  // `backend-connect`: frontend-for-your-backend projects from the Home
+  // `Connect backend` card — the agent analyzes the linked backend code
+  // folder, writes BACKEND.md, grills the user via question-forms (stack,
+  // pages, look, base URL), then generates a frontend wired to the real
+  // endpoints. Routes the `example-backend-connect` scenario plugin.
+  intent?: 'live-artifact' | 'web-clone' | 'document' | 'webgl-experience' | 'worker-visualizer' | 'backend-connect';
   fidelity?: 'wireframe' | 'high-fidelity';
   speakerNotes?: boolean;
   slideCount?: string;
@@ -170,6 +175,10 @@ export interface ProjectMetadata {
   promptTemplate?: PromptTemplateMetadata;
   // Absolute paths to local code folders the agent can read via --add-dir.
   linkedDirs?: string[];
+  // backend-connect projects: the connected backend code folder. Always also
+  // present in linkedDirs so the agent can read it; kept separately so the
+  // prompt composer can name it unambiguously when linkedDirs holds more dirs.
+  backendDir?: string;
   // Batch/API-created projects can opt out of the initial discovery form so
   // the first agent turn builds immediately from the submitted brief.
   skipDiscoveryBrief?: boolean;
