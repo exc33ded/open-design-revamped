@@ -136,6 +136,67 @@ export function findSkillById(skills: unknown, id: unknown): SkillInfo | undefin
   return (skills as SkillInfo[]).find((s) => s.id === canonical);
 }
 
+// Auto-pick composable skills for a run where the user selected none.
+// Deliberately high-precision: a skill is picked only when the prompt
+// invokes it explicitly ("/graphify", "@graphify"), names a multi-word
+// skill id ("ui-ux-pro-max" / "ui ux pro max" / "banner design"), or hits
+// one of its frontmatter `triggers` phrases. Description matching is
+// intentionally left out — generic words there drag in unrelated skills.
+// Derived example ids (`parent:child`) are never picked.
+export function autoPickSkillIds(
+  skills: unknown,
+  message: unknown,
+  max = 2,
+): string[] {
+  if (typeof message !== "string" || !message.trim() || !Array.isArray(skills)) {
+    return [];
+  }
+  const haystack = message.toLowerCase();
+  const hasPhrase = (phrase: string): boolean => {
+    const escaped = phrase.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+    return new RegExp(`(?<=^|\\W)${escaped}(?=\\W|$)`).test(haystack);
+  };
+  const allIds = new Set(
+    (skills as SkillInfo[])
+      .filter((s) => s && typeof s.id === "string")
+      .map((s) => s.id),
+  );
+  const scored: Array<{ id: string; score: number }> = [];
+  for (const skill of skills as SkillInfo[]) {
+    if (!skill || typeof skill.id !== "string") continue;
+    const id = skill.id.toLowerCase();
+    // Skip derived example cards (`<parent>:<key>` where <parent> is itself
+    // a listed skill) — but keep plugin skills whose ids merely carry a
+    // namespace prefix that is not a skill (e.g. "ckm:banner-design").
+    const colonIdx = skill.id.indexOf(":");
+    if (colonIdx > 0 && allIds.has(skill.id.slice(0, colonIdx))) continue;
+    // Prefixed ids match on their tail too, so "banner design" finds
+    // "ckm:banner-design".
+    const tail = colonIdx > 0 ? id.slice(colonIdx + 1) : id;
+    let score = 0;
+    // Explicit slash/at invocation works for any id, including single words.
+    for (const invokable of tail === id ? [id] : [id, tail]) {
+      if (haystack.includes(`/${invokable}`) || haystack.includes(`@${invokable}`)) {
+        score += 3;
+        break;
+      }
+    }
+    // Bare-name mention only for multi-word ids; a single generic word like
+    // "design" or "brand" would otherwise match nearly every prompt.
+    if (/[-_]/.test(tail)) {
+      if (hasPhrase(tail) || hasPhrase(tail.replace(/[-_]+/g, " "))) score += 3;
+    }
+    for (const trigger of Array.isArray(skill.triggers) ? skill.triggers : []) {
+      if (typeof trigger !== "string") continue;
+      const phrase = trigger.trim().toLowerCase();
+      if (phrase.length >= 3 && hasPhrase(phrase)) score += 2;
+    }
+    if (score > 0) scored.push({ id: skill.id, score });
+  }
+  scored.sort((a, b) => b.score - a.score);
+  return scored.slice(0, max).map((entry) => entry.id);
+}
+
 // Accept either a single root path or an array. When given multiple roots,
 // the first one wins on id collisions so user-imported skills under
 // USER_SKILLS_DIR can shadow a built-in skill of the same name without

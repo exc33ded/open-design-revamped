@@ -233,6 +233,7 @@ export {
 } from './desktop-auth.js';
 import { readCurrentAppVersionInfo } from './app-version.js';
 import {
+  autoPickSkillIds,
   findSkillById,
   listSkills,
   resolveSkillId,
@@ -854,7 +855,45 @@ const USER_DESIGN_TEMPLATES_DIR = path.join(RUNTIME_DATA_DIR, 'design-templates'
 // documents this root but upstream never wired it; scanned lowest-priority
 // so daemon/user skills win on id conflicts.
 const CLAUDE_USER_SKILLS_DIR = path.join(os.homedir(), '.claude', 'skills');
-const SKILL_ROOTS = [USER_SKILLS_DIR, SKILLS_DIR, CLAUDE_USER_SKILLS_DIR];
+// Claude Code plugin-cache skills. Layout on disk is
+// ~/.claude/plugins/cache/<marketplace>/<plugin>/<version>/{skills,.claude/skills}/<skill>/SKILL.md
+// — the same SKILL.md format listSkills() already parses, so each version
+// dir's skills folder just becomes another scan root. Only the latest
+// cached version per plugin is scanned. Resolved once at startup:
+// restart the daemon after installing a new Claude Code plugin.
+function claudePluginSkillRoots(): string[] {
+  const cacheRoot = path.join(os.homedir(), '.claude', 'plugins', 'cache');
+  const roots: string[] = [];
+  try {
+    for (const marketplace of fs.readdirSync(cacheRoot, { withFileTypes: true })) {
+      if (!marketplace.isDirectory()) continue;
+      const marketplaceDir = path.join(cacheRoot, marketplace.name);
+      for (const plugin of fs.readdirSync(marketplaceDir, { withFileTypes: true })) {
+        if (!plugin.isDirectory()) continue;
+        const pluginDir = path.join(marketplaceDir, plugin.name);
+        const latest = fs.readdirSync(pluginDir, { withFileTypes: true })
+          .filter((d) => d.isDirectory())
+          .map((d) => d.name)
+          .sort((a, b) => b.localeCompare(a, undefined, { numeric: true }))[0];
+        if (!latest) continue;
+        for (const sub of ['skills', path.join('.claude', 'skills')]) {
+          const dir = path.join(pluginDir, latest, sub);
+          if (fs.existsSync(dir)) roots.push(dir);
+        }
+      }
+    }
+  } catch {
+    // No Claude Code plugin cache on this machine — nothing to scan.
+  }
+  return roots;
+}
+const CLAUDE_PLUGIN_SKILL_ROOTS = claudePluginSkillRoots();
+const SKILL_ROOTS = [
+  USER_SKILLS_DIR,
+  SKILLS_DIR,
+  CLAUDE_USER_SKILLS_DIR,
+  ...CLAUDE_PLUGIN_SKILL_ROOTS,
+];
 const DESIGN_TEMPLATE_ROOTS = [USER_DESIGN_TEMPLATES_DIR, DESIGN_TEMPLATES_DIR];
 const ALL_SKILL_LIKE_ROOTS = [
   USER_SKILLS_DIR,
@@ -862,6 +901,7 @@ const ALL_SKILL_LIKE_ROOTS = [
   SKILLS_DIR,
   DESIGN_TEMPLATES_DIR,
   CLAUDE_USER_SKILLS_DIR,
+  ...CLAUDE_PLUGIN_SKILL_ROOTS,
 ];
 // Global OD Library data root — owned, content-addressed assets captured by
 // the clipper / `od library import`. Derived from RUNTIME_DATA_DIR per the
@@ -3413,6 +3453,7 @@ export async function startServer({
     appliedPluginSnapshotId,
     mediaExecution,
     byokMediaDefaults,
+    userPrompt,
   }) => {
     const project =
       typeof projectId === 'string' && projectId
@@ -3475,12 +3516,29 @@ export async function startServer({
       typeof effectiveSkillId === 'string' && effectiveSkillId
         ? resolveSkillId(effectiveSkillId)
         : null;
-    const adHocSkillIds = Array.isArray(skillIds)
+    let adHocSkillIds = Array.isArray(skillIds)
       ? skillIds
           .map((s) => (typeof s === 'string' ? s.trim() : ''))
           .filter(Boolean)
           .filter((id) => resolveSkillId(id) !== effectiveCanonicalSkillId)
       : [];
+    // Auto-pick: when neither the project nor the composer selected any
+    // skill, match the user's prompt against skill ids / trigger phrases
+    // so "/graphify this repo" or "ui ux pro max dashboard" loads the
+    // skill without the @-mention popover. High-precision by design —
+    // see autoPickSkillIds() for the matching rules.
+    if (
+      !effectiveCanonicalSkillId &&
+      adHocSkillIds.length === 0 &&
+      typeof userPrompt === 'string' &&
+      userPrompt
+    ) {
+      const picked = autoPickSkillIds(await loadAllSkills(), userPrompt);
+      if (picked.length > 0) {
+        console.log(`[skills] auto-picked from prompt: ${picked.join(', ')}`);
+        adHocSkillIds = picked;
+      }
+    }
 
     let skillBody;
     let skillName;
@@ -4466,6 +4524,7 @@ export async function startServer({
         sessionMode: runSessionMode,
         mediaExecution: run?.mediaExecution,
         byokMediaDefaults,
+        userPrompt: run?.userPrompt ?? null,
         // Plan §3.M2 / §3.V1 — forward the run's snapshot id so the
         // prompt composer can splice in `## Active stage` blocks.
         // Default ON; set OD_BUNDLED_ATOM_PROMPTS=0 to opt out.
