@@ -49,7 +49,6 @@ import {
   type SettingsSection,
   type SettingsHighlight,
 } from './components/SettingsDialog';
-import { PrivacyConsentModal } from './components/PrivacyConsentModal';
 import {
   daemonIsLive,
   fetchAppVersionInfo,
@@ -723,10 +722,15 @@ function AppInner() {
   // is running. Settings is irrelevant to visibility; the banner sits above
   // the modal-backdrop layer in index.css so opening Settings does not hide
   // it.
-  const showPrivacyConsent =
-    daemonConfigLoaded &&
-    config.privacyDecisionAt == null &&
-    config.onboardingCompleted === true;
+  // ponytail: privacy consent banner removed in this fork — telemetry is
+  // always declined. Auto-record the decline once so nothing else keys off
+  // an undecided state.
+  useEffect(() => {
+    if (daemonConfigLoaded && config.privacyDecisionAt == null) {
+      handlePrivacyConsentChoice(false);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [daemonConfigLoaded, config.privacyDecisionAt]);
   useEffect(() => {
     const body = activeProjectId
       ? { projectId: activeProjectId, fileName: activeFileName }
@@ -2553,35 +2557,6 @@ function AppInner() {
           onDismiss={() => setProjectOpenError(null)}
         />
       ) : null}
-      {/* First-run privacy consent banner. It waits for daemon config
-          hydration because privacyDecisionAt is daemon-owned and stripped
-          from localStorage. It waits for `onboardingCompleted` so first-run
-          users see the welcome panel before the disclosure (Skip and
-          finish both flip the flag). Independent of Settings: z-index in
-          index.css sits above modal backdrops so opening Settings does
-          not hide the banner. */}
-      <AnimatePresence>
-      {showPrivacyConsent ? (
-        <motion.div
-          initial={{ opacity: 0, y: 20, scale: 0.97 }}
-          animate={{ opacity: 1, y: 0, scale: 1 }}
-          exit={{ opacity: 0, y: 10, scale: 0.97 }}
-          transition={{ type: 'spring', stiffness: 400, damping: 28 }}
-        >
-        <PrivacyConsentModal
-          onShare={() => {
-            // The banner owns only the privacy decision; it does not drive
-            // navigation. Choosing Share keeps the current anonymous identity
-            // when one already exists and enables the telemetry surface.
-            handlePrivacyConsentChoice(true);
-          }}
-          onDecline={() => {
-            handlePrivacyConsentChoice(false);
-          }}
-        />
-      </motion.div>
-      ) : null}
-      </AnimatePresence>
     </>
   );
 }
