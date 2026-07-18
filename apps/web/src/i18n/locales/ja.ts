@@ -470,6 +470,10 @@ export const ja: Dict = {
   'settings.byokSpeechModel': '音声生成モデル',
   'settings.byokSpeechVoice': '音声(ボイス)',
   'settings.byokModelDefaultOption': 'デフォルト',
+
+  'settings.byokWebSearch': 'ウェブ検索',
+
+  'settings.byokWebSearchHint': 'ウェブ検索はDeepSeekのAnthropic互換エンドポイント（web_searchツール）を使用します。推論エフォートはウェブ検索がオフの場合のみ適用されます。',
   'settings.maxTokens': '最大トークン（任意）',
   'settings.maxTokensHint': '応答長の上限。各モデルにチューニング済みのデフォルト値があります（プレースホルダーに表示）。空のままにすればそれを使用し、数値を入力すれば上書きされます。',
   'settings.apiHint': 'リクエストはローカル daemon プロキシ経由で設定した Base URL に送信されます。キーはこのブラウザ内にのみ保存され、プロバイダーへのリクエスト時に送信されます。',

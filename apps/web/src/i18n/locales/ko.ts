@@ -470,6 +470,10 @@ export const ko: Dict = {
   'settings.byokSpeechModel': '음성 생성 모델',
   'settings.byokSpeechVoice': '음성(보이스)',
   'settings.byokModelDefaultOption': '기본값',
+
+  'settings.byokWebSearch': '웹 검색',
+
+  'settings.byokWebSearchHint': '웹 검색은 DeepSeek의 Anthropic 호환 엔드포인트(web_search 도구)를 사용합니다. 추론 노력은 웹 검색이 꺼져 있을 때만 적용됩니다.',
   'settings.maxTokens': '최대 토큰 수 (선택 사항)',
   'settings.maxTokensHint': '응답 길이 상한입니다. 각 모델에는 기본값이 미리 조정되어 있으며(placeholder로 표시됨), 비워 두면 그 값을 사용하고 숫자를 입력하면 덮어씁니다.',
   'settings.apiHint': '요청은 로컬 daemon 프록시를 통해 설정한 Base URL로 전송됩니다. 키는 이 브라우저에만 저장되며 제공자 요청과 함께 전송됩니다.',

@@ -114,6 +114,7 @@ export type ApiProtocol =
   | 'azure'
   | 'google'
   | 'ollama'
+  | 'deepseek'
   | 'senseaudio'
   | 'aihubmix'
   | 'bedrock';
@@ -265,6 +266,14 @@ export interface ApiProtocolConfig {
   byokSpeechModel?: string;
   /** BYOK only — default speech voice id for the generate_speech tool. */
   byokSpeechVoice?: string;
+  /** DeepSeek BYOK only — `reasoning_effort` sent on the OpenAI-shaped
+   *  endpoint. One of low | medium | high | xhigh | max; empty = provider
+   *  default. */
+  byokReasoningEffort?: string;
+  /** DeepSeek BYOK only — enable the web_search server tool. DeepSeek only
+   *  offers it on its Anthropic-shaped endpoint, so the daemon reroutes the
+   *  request there when this is on. */
+  byokWebSearch?: boolean;
 }
 
 export interface ByokProviderConfigDraft {
@@ -396,6 +405,10 @@ export interface AppConfig {
   /** BYOK only — default speech model + voice for the generate_speech tool. */
   byokSpeechModel?: string;
   byokSpeechVoice?: string;
+  /** DeepSeek BYOK only — reasoning effort + web search toggles. Mirror
+   *  apiProtocolConfigs.deepseek.* onto AppConfig like the media fields. */
+  byokReasoningEffort?: string;
+  byokWebSearch?: boolean;
   apiProtocolConfigs?: Partial<Record<ApiProtocol, ApiProtocolConfig>>;
   /** BYOK provider drafts keyed by protocol + selected provider base URL. */
   byokProviderConfigDrafts?: Record<string, ByokProviderConfigDraft>;

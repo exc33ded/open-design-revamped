@@ -134,22 +134,20 @@ export const KNOWN_PROVIDERS: KnownProvider[] = [
     label: 'DeepSeek — Anthropic',
     protocol: 'anthropic',
     baseUrl: 'https://api.deepseek.com/anthropic',
-    model: 'deepseek-chat',
+    model: 'deepseek-v4-flash',
     models: [
-      'deepseek-chat',
-      'deepseek-reasoner',
       'deepseek-v4-flash',
       'deepseek-v4-pro',
     ],
   },
   {
-    label: 'DeepSeek — OpenAI',
-    protocol: 'openai',
-    baseUrl: 'https://api.deepseek.com/v1',
-    model: 'deepseek-chat',
+    // DeepSeek's OpenAI-shaped API gets its own protocol tab (reasoning
+    // effort + web-search toggles live there); this entry backs that tab.
+    label: 'DeepSeek',
+    protocol: 'deepseek',
+    baseUrl: 'https://api.deepseek.com',
+    model: 'deepseek-v4-flash',
     models: [
-      'deepseek-chat',
-      'deepseek-reasoner',
       'deepseek-v4-flash',
       'deepseek-v4-pro',
     ],
@@ -173,8 +171,8 @@ export const KNOWN_PROVIDERS: KnownProvider[] = [
     label: 'OpenAI',
     protocol: 'openai',
     baseUrl: 'https://api.openai.com/v1',
-    model: 'gpt-4o',
-    models: ['gpt-4o', 'gpt-4o-mini', 'o3', 'o4-mini'],
+    model: 'gpt-5.5',
+    models: ['gpt-5.5', 'gpt-4o', 'gpt-4o-mini', 'o3', 'o4-mini'],
   },
   {
     label: 'OpenRouter',
@@ -249,18 +247,6 @@ export const KNOWN_PROVIDERS: KnownProvider[] = [
     baseUrl: 'https://api.stepfun.ai/v1',
     model: 'step-2-mini',
     models: ['step-2-mini', 'step-1-8k', 'step-1-32k'],
-  },
-  {
-    label: 'DeepSeek — OpenAI',
-    protocol: 'openai',
-    baseUrl: 'https://api.deepseek.com',
-    model: 'deepseek-chat',
-    models: [
-      'deepseek-chat',
-      'deepseek-reasoner',
-      'deepseek-v4-flash',
-      'deepseek-v4-pro',
-    ],
   },
   {
     label: 'Mistral AI',

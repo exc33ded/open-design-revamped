@@ -71,6 +71,96 @@ describe('API proxy routes', () => {
     );
   });
 
+  it('deepseek proxy sends reasoning_effort on the OpenAI-shaped endpoint', async () => {
+    const fetchMock = vi.fn((input: FetchInput, init?: FetchInit) => {
+      const url = String(input);
+      if (url.startsWith(baseUrl)) return realFetch(input, init);
+      return Promise.resolve(sseResponse('data: [DONE]\n\n'));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const res = await realFetch(`${baseUrl}/api/proxy/deepseek/stream`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        baseUrl: 'https://api.deepseek.com',
+        apiKey: 'sk-ds',
+        model: 'deepseek-v4-flash',
+        messages: [{ role: 'user', content: 'hello' }],
+        reasoningEffort: 'xhigh',
+      }),
+    });
+    expect(res.status).toBe(200);
+    await res.text();
+
+    const upstream = fetchMock.mock.calls.find(
+      ([input]) => String(input) === 'https://api.deepseek.com/v1/chat/completions',
+    );
+    expect(upstream).toBeTruthy();
+    const payload = JSON.parse(String(upstream![1]!.body));
+    expect(payload.reasoning_effort).toBe('xhigh');
+    expect(payload.model).toBe('deepseek-v4-flash');
+  });
+
+  it('deepseek proxy drops reasoning_effort values the API does not accept', async () => {
+    const fetchMock = vi.fn((input: FetchInput, init?: FetchInit) => {
+      const url = String(input);
+      if (url.startsWith(baseUrl)) return realFetch(input, init);
+      return Promise.resolve(sseResponse('data: [DONE]\n\n'));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    await (await realFetch(`${baseUrl}/api/proxy/deepseek/stream`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        baseUrl: 'https://api.deepseek.com',
+        apiKey: 'sk-ds',
+        model: 'deepseek-v4-flash',
+        messages: [{ role: 'user', content: 'hello' }],
+        reasoningEffort: 'minimal',
+      }),
+    })).text();
+
+    const upstream = fetchMock.mock.calls.find(
+      ([input]) => String(input) === 'https://api.deepseek.com/v1/chat/completions',
+    );
+    const payload = JSON.parse(String(upstream![1]!.body));
+    expect(payload.reasoning_effort).toBeUndefined();
+  });
+
+  it('deepseek proxy reroutes to the Anthropic-shaped endpoint with the web_search tool when webSearch is on', async () => {
+    const fetchMock = vi.fn((input: FetchInput, init?: FetchInit) => {
+      const url = String(input);
+      if (url.startsWith(baseUrl)) return realFetch(input, init);
+      return Promise.resolve(sseResponse('event: message_stop\ndata: {}\n\n'));
+    });
+    vi.stubGlobal('fetch', fetchMock);
+
+    const res = await realFetch(`${baseUrl}/api/proxy/deepseek/stream`, {
+      method: 'POST',
+      headers: { 'content-type': 'application/json' },
+      body: JSON.stringify({
+        baseUrl: 'https://api.deepseek.com',
+        apiKey: 'sk-ds',
+        model: 'deepseek-v4-pro',
+        messages: [{ role: 'user', content: 'hello' }],
+        webSearch: true,
+      }),
+    });
+    expect(res.status).toBe(200);
+    await res.text();
+
+    const upstream = fetchMock.mock.calls.find(
+      ([input]) => String(input) === 'https://api.deepseek.com/anthropic/v1/messages',
+    );
+    expect(upstream).toBeTruthy();
+    const init = upstream![1]!;
+    expect((init.headers as Record<string, string>)['x-api-key']).toBe('sk-ds');
+    const payload = JSON.parse(String(init.body));
+    expect(payload.tools).toEqual([{ type: 'web_search_20250305', name: 'web_search' }]);
+  });
+
   it.each([
     {
       provider: 'anthropic',

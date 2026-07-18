@@ -470,6 +470,10 @@ export const pl: Dict = {
   'settings.byokSpeechModel': 'Model mowy',
   'settings.byokSpeechVoice': 'Głos',
   'settings.byokModelDefaultOption': 'Domyślny',
+
+  'settings.byokWebSearch': 'Wyszukiwanie w sieci',
+
+  'settings.byokWebSearchHint': 'Wyszukiwanie w sieci korzysta z punktu końcowego DeepSeek zgodnego z Anthropic (narzędzie web_search). Poziom rozumowania obowiązuje tylko przy wyłączonym wyszukiwaniu.',
   'settings.maxTokens': 'Maks. liczba tokenów (opcjonalnie)',
   'settings.maxTokensHint': 'Limit długości odpowiedzi. Każdy model ma dostrojony domyślny limit (widoczny jako placeholder); pozostaw puste, aby go użyć, lub wpisz liczbę.',
   'settings.apiHint': 'Wywołania są wysyłane przez lokalny proxy daemon do ustawionego Base URL. Klucz jest przechowywany tylko w tej przeglądarce i wysyłany z żądaniami do dostawcy.',

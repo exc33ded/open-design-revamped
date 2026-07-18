@@ -470,6 +470,10 @@ export const ptBR: Dict = {
   'settings.byokSpeechModel': 'Modelo de voz',
   'settings.byokSpeechVoice': 'Voz',
   'settings.byokModelDefaultOption': 'Padrão',
+
+  'settings.byokWebSearch': 'Busca na web',
+
+  'settings.byokWebSearchHint': 'A busca na web usa o endpoint compatível com Anthropic da DeepSeek (ferramenta web_search). O esforço de raciocínio só se aplica com a busca na web desativada.',
   'settings.maxTokens': 'Tokens máx. (opcional)',
   'settings.maxTokensHint': 'Limite para o comprimento da resposta. Cada modelo tem um valor padrão ajustado (visível no placeholder); deixe em branco para usá-lo ou insira um número para substituí-lo.',
   'settings.apiHint': 'As chamadas passam pelo proxy do daemon local até a Base URL definida. A chave fica armazenada apenas neste navegador e é enviada com as requisições ao provedor.',

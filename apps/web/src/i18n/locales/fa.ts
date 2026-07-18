@@ -470,6 +470,10 @@ export const fa: Dict = {
   'settings.byokSpeechModel': 'مدل گفتار',
   'settings.byokSpeechVoice': 'صدای گفتار',
   'settings.byokModelDefaultOption': 'پیش‌فرض',
+
+  'settings.byokWebSearch': 'جستجوی وب',
+
+  'settings.byokWebSearchHint': 'جستجوی وب از نقطه پایانی سازگار با Anthropic دیپ‌سیک (ابزار web_search) استفاده می‌کند. تلاش استدلال فقط هنگام خاموش بودن جستجوی وب اعمال می‌شود.',
   'settings.maxTokens': 'حداکثر توکن (اختیاری)',
   'settings.maxTokensHint': 'سقف طول پاسخ. هر مدل مقدار پیش‌فرض تنظیم‌شدهٔ خود را دارد (در placeholder نمایش داده می‌شود)؛ برای استفاده از آن خالی بگذارید، یا برای جایگزینی، عددی وارد کنید.',
   'settings.apiHint': 'درخواست‌ها از طریق پراکسی daemon محلی به Base URL تنظیم‌شده ارسال می‌شوند. کلید فقط در همین مرورگر ذخیره می‌شود و همراه درخواست‌های ارائه‌دهنده فرستاده می‌شود.',

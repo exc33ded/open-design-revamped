@@ -794,7 +794,7 @@ function inspectProviderCompletion(
   const obj = data && typeof data === 'object' ? data as Record<string, unknown> : null;
   if (!obj) return { valid: false };
 
-  if (protocol === 'openai' || protocol === 'azure' || protocol === 'senseaudio' || protocol === 'aihubmix') {
+  if (protocol === 'openai' || protocol === 'azure' || protocol === 'deepseek' || protocol === 'senseaudio' || protocol === 'aihubmix') {
     const responseModel = typeof obj.model === 'string' ? obj.model : '';
     if (
       // AIHubMix is omitted from the strict response-model check (like Azure):
@@ -1193,6 +1193,7 @@ function buildProviderCall(input: ProviderTestRequest): ProviderCallShape {
         extractText: extractOpenAIMessageText,
       };
     case 'openai':
+    case 'deepseek':
     case 'senseaudio':
       // SenseAudio is wire-compatible with OpenAI (POST /v1/chat/completions,
       // Bearer auth, identical body + response shape), so the connection

@@ -36,6 +36,7 @@ export type ByokChatProtocol =
   | 'azure'
   | 'google'
   | 'ollama'
+  | 'deepseek'
   | 'senseaudio'
   | 'aihubmix';
 

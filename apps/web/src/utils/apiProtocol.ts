@@ -7,6 +7,7 @@ const API_PROTOCOL_LABELS: Record<ApiProtocol, string> = {
   azure: 'Azure OpenAI',
   google: 'Google Gemini',
   ollama: 'Ollama Cloud API',
+  deepseek: 'DeepSeek API',
   senseaudio: 'SenseAudio API',
   aihubmix: 'AIHubMix API',
   bedrock: 'AWS Bedrock',
@@ -18,6 +19,7 @@ const API_PROTOCOL_AGENT_IDS: Record<ApiProtocol, string> = {
   azure: 'azure-openai-api',
   google: 'google-gemini-api',
   ollama: 'ollama-cloud-api',
+  deepseek: 'deepseek-api',
   senseaudio: 'senseaudio-api',
   aihubmix: 'aihubmix-api',
   bedrock: 'bedrock-api',
@@ -45,6 +47,7 @@ export function usesAnthropicProxy(cfg: AppConfig): boolean {
     cfg.apiProtocol === 'azure' ||
     cfg.apiProtocol === 'ollama' ||
     cfg.apiProtocol === 'google' ||
+    cfg.apiProtocol === 'deepseek' ||
     cfg.apiProtocol === 'senseaudio' ||
     cfg.apiProtocol === 'aihubmix' ||
     cfg.apiProtocol === 'bedrock' ||

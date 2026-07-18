@@ -25,7 +25,6 @@ import { useT } from '../i18n';
 const REPO = 'https://github.com/exc33ded/open-design-revamped';
 const ISSUES_URL = `${REPO}/issues/new`;
 const PRS_URL = `${REPO}/pulls`;
-const RELEASES_URL = `${REPO}/releases`;
 const LATEST_RELEASE_URL = `${REPO}/releases/latest`;
 const ext = { target: '_blank', rel: 'noreferrer noopener' } as const;
 
@@ -162,27 +161,6 @@ export function EntryHelpMenu() {
               <Icon name="bell" size={14} />
             </span>
             <span>{t('entry.helpWhatsNew')}</span>
-          </a>
-          <div className="entry-help-popover__divider" aria-hidden />
-          <a
-            className="entry-help-popover__item"
-            href={RELEASES_URL}
-            {...ext}
-            role="menuitem"
-            onClick={() => {
-              trackHelpPopoverClick(analytics.track, {
-                page_name: 'home',
-                area: 'help_resources_popover',
-                element: 'download_desktop_app',
-                surface: 'popover',
-              });
-              setOpen(false);
-            }}
-          >
-            <span className="entry-help-popover__icon" aria-hidden>
-              <Icon name="download" size={14} />
-            </span>
-            <span>{t('entry.helpDownloadDesktop')}</span>
           </a>
         </motion.div>
       ) : null}

@@ -476,6 +476,10 @@ export const zhCN: Dict = {
   "settings.byokSpeechModel": "语音生成模型",
   "settings.byokSpeechVoice": "音色",
   "settings.byokModelDefaultOption": "默认",
+
+  "settings.byokWebSearch": "联网搜索",
+
+  "settings.byokWebSearchHint": "联网搜索使用 DeepSeek 的 Anthropic 兼容端点（web_search 工具）。推理力度仅在关闭联网搜索时生效。",
   "settings.maxTokens": "最大 tokens（可选）",
   "settings.maxTokensHint":
     "响应长度上限。每个 model 有调优过的默认值（在 placeholder 里显示），留空即使用，输入数字则覆盖。",

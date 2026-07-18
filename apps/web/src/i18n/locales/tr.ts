@@ -470,6 +470,10 @@ export const tr: Dict = {
   'settings.byokSpeechModel': 'Konuşma modeli',
   'settings.byokSpeechVoice': 'Ses',
   'settings.byokModelDefaultOption': 'Varsayılan',
+
+  'settings.byokWebSearch': 'Web araması',
+
+  'settings.byokWebSearchHint': 'Web araması, DeepSeek’in Anthropic uyumlu uç noktasını (web_search aracı) kullanır. Akıl yürütme düzeyi yalnızca web araması kapalıyken geçerlidir.',
   'settings.maxTokens': 'Maks. token (isteğe bağlı)',
   'settings.maxTokensHint': 'Yanıt uzunluğu sınırı. Her modelin ayarlanmış bir varsayılanı vardır (yer tutucuda görünür); kullanmak için boş bırakın, üzerine yazmak için bir sayı girin.',
   'settings.apiHint': 'İstekler yerel daemon proxy üzerinden ayarladığınız Base URLye gönderilir. Anahtar yalnızca bu tarayıcıda saklanır ve sağlayıcı istekleriyle birlikte gönderilir.',

@@ -470,6 +470,10 @@ export const th: Dict = {
   'settings.byokSpeechModel': 'โมเดลเสียงพูด',
   'settings.byokSpeechVoice': 'เสียงพูด',
   'settings.byokModelDefaultOption': 'ค่าเริ่มต้น',
+
+  'settings.byokWebSearch': 'การค้นหาเว็บ',
+
+  'settings.byokWebSearchHint': 'การค้นหาเว็บใช้ปลายทางที่เข้ากันได้กับ Anthropic ของ DeepSeek (เครื่องมือ web_search) ระดับการใช้เหตุผลจะมีผลเฉพาะเมื่อปิดการค้นหาเว็บ',
   'settings.maxTokens': 'Max tokens (เลือกได้)',
   'settings.maxTokensHint': 'ขีดจำกัดความยาวในการตอบกลับ',
   'settings.apiHint': 'คำสั่งจะถูกส่งผ่าน local daemon proxy ไปยัง base URL ที่คุณตั้งไว้ API Key จะถูกเก็บในเบราว์เซอร์นี้เท่านั้น',

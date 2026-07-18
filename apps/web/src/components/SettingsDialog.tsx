@@ -749,6 +749,10 @@ const API_KEY_CONSOLE_LINKS: Record<ApiProtocol, { host: string; url: string }> 
     host: 'ollama.com',
     url: 'https://ollama.com/settings/keys',
   },
+  deepseek: {
+    host: 'platform.deepseek.com',
+    url: 'https://platform.deepseek.com/api_keys',
+  },
   senseaudio: {
     host: 'docs.senseaudio.cn',
     url: 'https://docs.senseaudio.cn',
@@ -934,6 +938,8 @@ function currentApiProtocolConfig(config: AppConfig): ApiProtocolConfig {
     byokVideoModel: config.byokVideoModel ?? '',
     byokSpeechModel: config.byokSpeechModel ?? '',
     byokSpeechVoice: config.byokSpeechVoice ?? '',
+    byokReasoningEffort: config.byokReasoningEffort ?? '',
+    byokWebSearch: config.byokWebSearch ?? false,
   };
 }
 
@@ -1001,6 +1007,11 @@ function applyApiProtocolConfig(
       protocol === 'aihubmix' ? (apiConfig.byokSpeechModel ?? '') : '',
     byokSpeechVoice:
       protocol === 'aihubmix' ? (apiConfig.byokSpeechVoice ?? '') : '',
+    // Reasoning effort + web search are DeepSeek-only knobs.
+    byokReasoningEffort:
+      protocol === 'deepseek' ? (apiConfig.byokReasoningEffort ?? '') : '',
+    byokWebSearch:
+      protocol === 'deepseek' ? (apiConfig.byokWebSearch ?? false) : false,
   };
 }
 
@@ -5298,6 +5309,42 @@ export function SettingsDialog({
                     onChange={(e) => updateApiConfig({ apiVersion: e.target.value.trim() })}
                   />
                 </label>
+              ) : null}
+              {apiProtocol === 'deepseek' ? (
+                <>
+                  <label className="field">
+                    <span className="field-label">{t('settings.reasoningPicker')}</span>
+                    <select
+                      value={cfg.byokReasoningEffort ?? ''}
+                      onChange={(e) =>
+                        updateApiConfig({ byokReasoningEffort: e.target.value })
+                      }
+                    >
+                      {/* Empty = provider default. The variants below are the
+                          exact set DeepSeek's OpenAI-shaped endpoint accepts
+                          for `reasoning_effort`. */}
+                      <option value="">{t('settings.byokModelDefaultOption')}</option>
+                      <option value="low">low</option>
+                      <option value="medium">medium</option>
+                      <option value="high">high</option>
+                      <option value="xhigh">xhigh</option>
+                      <option value="max">max</option>
+                    </select>
+                  </label>
+                  <label className="field">
+                    <span className="field-label">
+                      <input
+                        type="checkbox"
+                        checked={cfg.byokWebSearch ?? false}
+                        onChange={(e) =>
+                          updateApiConfig({ byokWebSearch: e.target.checked })
+                        }
+                      />{' '}
+                      {t('settings.byokWebSearch')}
+                    </span>
+                  </label>
+                  <p className="hint">{t('settings.byokWebSearchHint')}</p>
+                </>
               ) : null}
               {apiProtocol === 'senseaudio' || apiProtocol === 'aihubmix' ? (
                 <label className="field">

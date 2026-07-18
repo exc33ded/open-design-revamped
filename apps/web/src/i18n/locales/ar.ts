@@ -470,6 +470,10 @@ export const ar: Dict = {
   'settings.byokSpeechModel': 'نموذج توليد الصوت',
   'settings.byokSpeechVoice': 'صوت الكلام',
   'settings.byokModelDefaultOption': 'افتراضي',
+
+  'settings.byokWebSearch': 'البحث في الويب',
+
+  'settings.byokWebSearchHint': 'يستخدم البحث في الويب نقطة نهاية DeepSeek المتوافقة مع Anthropic (أداة web_search). ينطبق جهد الاستدلال فقط عند إيقاف البحث في الويب.',
   'settings.maxTokens': 'أقصى عدد من الرموز (اختياري)',
   'settings.maxTokensHint': 'الحد الأقصى لطول الاستجابة. لكل نموذج قيمة افتراضية؛ اتركها فارغة لاستخدامها، أو أدخل رقماً للتجاوز.',
   'settings.apiHint': 'تُرسل الطلبات عبر وكيل daemon المحلي إلى Base URL الذي تحدده. يُحفظ المفتاح في هذا المتصفح فقط ويُرسل مع طلبات المزود.',

@@ -470,6 +470,10 @@ export const fr: Dict = {
   'settings.byokSpeechModel': 'Modèle de synthèse vocale',
   'settings.byokSpeechVoice': 'Voix',
   'settings.byokModelDefaultOption': 'Par défaut',
+
+  'settings.byokWebSearch': 'Recherche web',
+
+  'settings.byokWebSearchHint': 'La recherche web utilise le point de terminaison compatible Anthropic de DeepSeek (outil web_search). L\'effort de raisonnement ne s\'applique que lorsque la recherche web est désactivée.',
   'settings.maxTokens': 'Tokens max (optionnel)',
   'settings.maxTokensHint': 'Limite de la longueur de réponse. Chaque modèle a une valeur par défaut (affichée à titre indicatif) ; laissez vide pour l\'utiliser, ou entrez un nombre pour la remplacer.',
   'settings.apiHint': 'Stockée uniquement dans ce navigateur.',

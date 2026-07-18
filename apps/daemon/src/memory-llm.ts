@@ -176,6 +176,13 @@ const PROVIDER_DEFAULTS = {
     model: 'gemma3:4b',
     baseUrl: 'https://ollama.com',
   },
+  // DeepSeek's chat API is OpenAI-compatible on the origin root, so the
+  // extractor falls through to callOpenAI with this base URL and the
+  // user's DeepSeek key. v4-flash is the fast/cheap variant.
+  deepseek: {
+    model: 'deepseek-v4-flash',
+    baseUrl: 'https://api.deepseek.com',
+  },
   // SenseAudio's chat API is OpenAI-compatible (POST /v1/chat/completions,
   // Bearer auth), so the extractor falls through to callOpenAI with this
   // base URL and the user's SenseAudio API key. The default model is the
@@ -218,6 +225,13 @@ function envKeyFor(provider) {
   }
   if (provider === 'ollama') {
     return process.env.OLLAMA_API_KEY?.trim() || '';
+  }
+  if (provider === 'deepseek') {
+    return (
+      process.env.OD_DEEPSEEK_API_KEY?.trim()
+      || process.env.DEEPSEEK_API_KEY?.trim()
+      || ''
+    );
   }
   if (provider === 'senseaudio') {
     return (

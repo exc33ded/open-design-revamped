@@ -65,6 +65,7 @@ const API_MODE_AGENT_IDS = new Set([
   'azure-openai-api',
   'google-gemini-api',
   'ollama-cloud-api',
+  'deepseek-api',
   'senseaudio-api',
   'aihubmix-api',
   'bedrock-api',

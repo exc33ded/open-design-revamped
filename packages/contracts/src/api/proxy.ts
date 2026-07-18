@@ -36,6 +36,14 @@ export interface ProxyStreamRequest extends ReasoningExecutionRequestFields {
   maxTokens?: number;
   // Azure OpenAI only. Defaults at the daemon when omitted.
   apiVersion?: string;
+  // DeepSeek only. Passed through as `reasoning_effort` on the OpenAI-shaped
+  // endpoint; the daemon validates against DeepSeek's accepted variants
+  // (low | medium | high | xhigh | max) and drops anything else.
+  reasoningEffort?: string;
+  // DeepSeek only. DeepSeek's web_search server tool exists solely on its
+  // Anthropic-shaped endpoint, so when set the daemon routes the request
+  // through /anthropic/v1/messages with the web_search tool attached.
+  webSearch?: boolean;
 }
 
 export interface ProxyStreamStartPayload {

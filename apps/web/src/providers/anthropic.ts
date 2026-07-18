@@ -16,6 +16,7 @@ import { streamMessageAzure } from './azure-compatible';
 import { streamMessageGoogle } from './google-compatible';
 import { streamMessageOllama } from './ollama-compatible';
 import { isOpenAICompatible, streamMessageOpenAI } from './openai-compatible';
+import { streamMessageDeepSeek } from './deepseek-compatible';
 import { streamMessageSenseAudio } from './senseaudio-compatible';
 import { streamMessageAIHubMix } from './aihubmix-compatible';
 import { usesAnthropicProxy } from '../utils/apiProtocol';
@@ -60,6 +61,9 @@ export async function streamMessage(
   }
   if (cfg.apiProtocol === 'google') {
     return streamMessageGoogle(cfg, system, history, signal, handlers);
+  }
+  if (cfg.apiProtocol === 'deepseek') {
+    return streamMessageDeepSeek(cfg, system, history, signal, handlers);
   }
   if (cfg.apiProtocol === 'senseaudio') {
     return streamMessageSenseAudio(cfg, system, history, signal, handlers, context);

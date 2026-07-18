@@ -470,6 +470,10 @@ export const ru: Dict = {
   'settings.byokSpeechModel': 'Модель синтеза речи',
   'settings.byokSpeechVoice': 'Голос',
   'settings.byokModelDefaultOption': 'По умолчанию',
+
+  'settings.byokWebSearch': 'Веб-поиск',
+
+  'settings.byokWebSearchHint': 'Веб-поиск использует Anthropic-совместимую конечную точку DeepSeek (инструмент web_search). Уровень рассуждений применяется только при выключенном веб-поиске.',
   'settings.maxTokens': 'Макс. токенов (опционально)',
   'settings.maxTokensHint': 'Ограничение длины ответа. У каждой модели свой настроенный дефолт (виден в плейсхолдере); оставьте поле пустым, чтобы использовать его, или введите число, чтобы переопределить.',
   'settings.apiHint': 'Запросы отправляются через локальный прокси daemon на указанную Base URL. Ключ хранится только в этом браузере и отправляется в запросах к провайдеру.',

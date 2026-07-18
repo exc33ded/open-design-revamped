@@ -132,6 +132,7 @@ export type MemoryExtractionProvider =
   | 'azure'
   | 'google'
   | 'ollama'
+  | 'deepseek'
   | 'senseaudio'
   | 'aihubmix';
 

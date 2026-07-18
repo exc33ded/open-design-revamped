@@ -12,6 +12,7 @@ const DEFAULT_BASE_URL_BY_PROTOCOL: Record<ByokChatProviderConfig['protocol'], s
   azure: '',
   google: 'https://generativelanguage.googleapis.com/v1beta',
   ollama: 'https://ollama.com',
+  deepseek: 'https://api.deepseek.com',
   senseaudio: 'https://api.senseaudio.cn',
   aihubmix: 'https://aihubmix.com/v1',
 };
@@ -235,6 +236,7 @@ function buildProviderEntry(
           ...apiKeyOption,
         },
       };
+    case 'deepseek':
     case 'senseaudio':
     case 'aihubmix':
       return {

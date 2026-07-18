@@ -234,6 +234,7 @@ export type ConnectionTestProtocol =
   | 'azure'
   | 'google'
   | 'ollama'
+  | 'deepseek'
   | 'senseaudio'
   | 'aihubmix'
   | 'bedrock';

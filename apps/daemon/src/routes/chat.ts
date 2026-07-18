@@ -180,7 +180,7 @@ export function registerChatRoutes(app: Express, ctx: RegisterChatRoutesDeps) {
     const protocol = body.protocol;
     if (
       typeof protocol !== 'string' ||
-      !['anthropic', 'openai', 'azure', 'google', 'ollama', 'senseaudio', 'aihubmix', 'bedrock'].includes(protocol)
+      !['anthropic', 'openai', 'azure', 'google', 'ollama', 'deepseek', 'senseaudio', 'aihubmix', 'bedrock'].includes(protocol)
     ) {
       return sendApiError(
         res,
@@ -258,7 +258,7 @@ export function registerChatRoutes(app: Express, ctx: RegisterChatRoutesDeps) {
         const protocol = body.protocol;
         if (
           typeof protocol !== 'string' ||
-          !['anthropic', 'openai', 'azure', 'google', 'ollama', 'senseaudio', 'aihubmix', 'bedrock'].includes(protocol)
+          !['anthropic', 'openai', 'azure', 'google', 'ollama', 'deepseek', 'senseaudio', 'aihubmix', 'bedrock'].includes(protocol)
         ) {
           return sendApiError(
             res,
@@ -1077,6 +1077,155 @@ export function registerChatRoutes(app: Express, ctx: RegisterChatRoutesDeps) {
       sse.end();
     } catch (err: any) {
       console.error(`[proxy:openai] internal error: ${err.message}`);
+      sendProxyError(sse, err.message, { code: 'INTERNAL_ERROR' });
+      sse.end();
+    } finally {
+      await proxyDispatcher?.close();
+    }
+  });
+
+  // DeepSeek exposes two wire shapes on one origin: OpenAI-compatible at /
+  // (supports `reasoning_effort`) and Anthropic-compatible at /anthropic —
+  // the ONLY place its web_search server tool exists (the OpenAI shape
+  // silently ignores web-search fields; verified against the live API). So
+  // this route picks the shape per request: webSearch → Anthropic +
+  // web_search tool, otherwise OpenAI + reasoning_effort.
+  const DEEPSEEK_REASONING_EFFORTS = new Set(['low', 'medium', 'high', 'xhigh', 'max']);
+  app.post('/api/proxy/deepseek/stream', async (req, res) => {
+    /** @type {Partial<ProxyStreamRequest>} */
+    const proxyBody = req.body || {};
+    if (rejectProxyPluginContext(proxyBody, res)) return;
+    const { baseUrl, apiKey, model, systemPrompt, messages, maxTokens } =
+      proxyBody;
+    if (!baseUrl || !apiKey || !model) {
+      return sendApiError(
+        res,
+        400,
+        'BAD_REQUEST',
+        'baseUrl, apiKey, and model are required',
+      );
+    }
+
+    const validated = await validateExternalApiBaseUrl(baseUrl);
+    if (validated.error) {
+      return sendApiError(
+        res,
+        validated.forbidden ? 403 : 400,
+        validated.forbidden ? 'FORBIDDEN' : 'BAD_REQUEST',
+        validated.error,
+      );
+    }
+    const reasoningDenial = authorizeReasoningEgress({
+      policy: proxyBody.reasoningExecution,
+      routeKind: 'proxy',
+      provider: 'deepseek',
+      resolvedBaseUrl: baseUrl,
+      model,
+    });
+    if (reasoningDenial) return sendReasoningEgressDenial(res, reasoningDenial);
+
+    if (proxyBody.webSearch === true) {
+      const url = new URL('/anthropic/v1/messages', String(baseUrl)).toString();
+      console.log(
+        `[proxy:deepseek] ${req.method} ${validated.parsed!.hostname} model=${model} (anthropic shape, web_search)`,
+      );
+      const payload = buildAnthropicChatPayload(model, systemPrompt, messages, maxTokens);
+      payload.tools = [{ type: 'web_search_20250305', name: 'web_search' }];
+      return runAnthropicChatStream(res, {
+        url,
+        headers: { 'x-api-key': apiKey, 'anthropic-version': '2023-06-01' },
+        payload,
+        logTag: 'proxy:deepseek',
+      });
+    }
+
+    const url = appendVersionedApiPath(baseUrl, '/chat/completions');
+    console.log(
+      `[proxy:deepseek] ${req.method} ${validated.parsed!.hostname} model=${model}`,
+    );
+
+    const payloadMessages = Array.isArray(messages) ? [...messages] : [];
+    if (typeof systemPrompt === 'string' && systemPrompt) {
+      payloadMessages.unshift({ role: 'system', content: systemPrompt });
+    }
+
+    const payload: any = {
+      model,
+      messages: payloadMessages,
+      max_tokens:
+        typeof maxTokens === 'number' && maxTokens > 0 ? maxTokens : 8192,
+      stream: true,
+    };
+    if (
+      typeof proxyBody.reasoningEffort === 'string' &&
+      DEEPSEEK_REASONING_EFFORTS.has(proxyBody.reasoningEffort)
+    ) {
+      payload.reasoning_effort = proxyBody.reasoningEffort;
+    }
+
+    const sse = createSseResponse(res);
+    let proxyDispatcher: ReturnType<typeof proxyDispatcherRequestInit> | null = null;
+    try {
+      proxyDispatcher = proxyDispatcherRequestInit();
+      const signal = clientDisconnectSignal(res);
+      sse.send('start', { model });
+      const response = await fetch(url, {
+        ...proxyDispatcher.requestInit,
+        signal,
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${apiKey}`,
+        },
+        body: JSON.stringify(payload),
+        redirect: 'error',
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        console.error(
+          `[proxy:deepseek] upstream error: ${response.status} ${redactAuthTokens(errorText)}`,
+        );
+        sendProxyError(sse, `Upstream error: ${response.status}`, {
+          code: proxyErrorCode(response.status),
+          details: errorText,
+          retryable: response.status === 429 || response.status >= 500,
+        });
+        return sse.end();
+      }
+
+      let ended = false;
+      const guard = createDeltaGuard(sse);
+      await streamUpstreamSse(response, ({ payload, data }: any) => {
+        if (payload === '[DONE]') {
+          sse.send('end', {});
+          ended = true;
+          return true;
+        }
+        if (!data) return false;
+        const streamError = extractStreamErrorMessage(data);
+        if (streamError) {
+          sendProxyError(sse, `Provider error: ${streamError}`, { details: data });
+          ended = true;
+          return true;
+        }
+        // `delta.reasoning_content` (hidden thinking) is intentionally not
+        // forwarded — only the final `delta.content` text reaches the chat.
+        const delta = extractOpenAIText(data);
+        if (delta) {
+          guard.sendDelta(delta);
+          if (guard.contaminated) {
+            sse.send('end', {});
+            ended = true;
+            return true;
+          }
+        }
+        return false;
+      });
+      if (!ended) sse.send('end', {});
+      sse.end();
+    } catch (err: any) {
+      console.error(`[proxy:deepseek] internal error: ${err.message}`);
       sendProxyError(sse, err.message, { code: 'INTERNAL_ERROR' });
       sse.end();
     } finally {

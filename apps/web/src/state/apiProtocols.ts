@@ -24,8 +24,6 @@ export const SUGGESTED_MODELS_BY_PROTOCOL: Record<ApiProtocol, readonly string[]
     'claude-opus-4-5',
     'claude-sonnet-4-5',
     'claude-haiku-4-5',
-    'deepseek-chat',
-    'deepseek-reasoner',
     'deepseek-v4-flash',
     'deepseek-v4-pro',
     'MiniMax-M2.7-highspeed',
@@ -38,22 +36,18 @@ export const SUGGESTED_MODELS_BY_PROTOCOL: Record<ApiProtocol, readonly string[]
     'mimo-v2.5-pro',
   ],
   openai: [
+    'gpt-5.5',
     'gpt-4o',
     'gpt-4o-mini',
     'o3',
     'o4-mini',
-    'deepseek-chat',
-    'deepseek-reasoner',
+  ],
+  deepseek: [
+    // Exactly what GET https://api.deepseek.com/models returns — the legacy
+    // deepseek-chat / deepseek-reasoner aliases still resolve upstream but
+    // are silently rerouted to v4-flash, so we don't advertise them.
     'deepseek-v4-flash',
     'deepseek-v4-pro',
-    'MiniMax-M2.7-highspeed',
-    'MiniMax-M2.7',
-    'MiniMax-M2.5-highspeed',
-    'MiniMax-M2.5',
-    'MiniMax-M2.1-highspeed',
-    'MiniMax-M2.1',
-    'MiniMax-M2',
-    'mimo-v2.5-pro',
   ],
   azure: [
     'gpt-4o',
@@ -172,6 +166,7 @@ export const FAST_MODEL_BY_PROTOCOL: Record<ApiProtocol, string> = {
   // pick produces a deterministic answer; users who care can override
   // through the Memory model picker.
   ollama: 'gemma3:4b',
+  deepseek: 'deepseek-v4-flash',
   senseaudio: 'senseaudio-s2-flash',
   aihubmix: 'gpt-4o-mini',
   bedrock: 'amazon.nova-lite-v1:0',
@@ -185,6 +180,7 @@ export const API_PROTOCOL_TABS: ReadonlyArray<{
   { id: 'openai', title: 'OpenAI' },
   { id: 'azure', title: 'Azure OpenAI' },
   { id: 'google', title: 'Google Gemini' },
+  { id: 'deepseek', title: 'DeepSeek' },
   { id: 'ollama', title: 'Ollama Cloud' },
   { id: 'senseaudio', title: 'SenseAudio' },
   { id: 'aihubmix', title: 'AIHubMix' },
@@ -196,6 +192,7 @@ export const API_PROTOCOL_LABELS: Record<ApiProtocol, string> = {
   azure: 'Azure OpenAI',
   google: 'Google Gemini',
   ollama: 'Ollama Cloud API',
+  deepseek: 'DeepSeek API',
   senseaudio: 'SenseAudio API',
   aihubmix: 'AIHubMix API',
   bedrock: 'AWS Bedrock',
@@ -207,6 +204,7 @@ export const API_KEY_PLACEHOLDERS: Record<ApiProtocol, string> = {
   azure: 'azure key',
   google: 'AIza... or AQ....',
   ollama: 'Ollama API key',
+  deepseek: 'sk-...',
   senseaudio: 'SenseAudio API key',
   aihubmix: 'sk-...',
   bedrock: 'AWS credentials',
@@ -221,6 +219,9 @@ export const DEFAULT_BASE_URL_BY_PROTOCOL: Record<ApiProtocol, string> = {
   azure: '',
   google: 'https://generativelanguage.googleapis.com/v1beta',
   ollama: 'https://ollama.com',
+  // DeepSeek's OpenAI-shaped origin. The daemon derives the Anthropic-shaped
+  // /anthropic path from this origin itself when web search is enabled.
+  deepseek: 'https://api.deepseek.com',
   senseaudio: 'https://api.senseaudio.cn',
   aihubmix: 'https://aihubmix.com/v1',
   bedrock: 'https://bedrock-runtime.us-east-1.amazonaws.com',
@@ -233,6 +234,7 @@ export const DEFAULT_BASE_URL_BY_PROTOCOL: Record<ApiProtocol, string> = {
 // here when it's such a gateway.
 export const FIXED_ORIGIN_GATEWAYS: ReadonlySet<ApiProtocol> = new Set<ApiProtocol>([
   'aihubmix',
+  'deepseek',
 ]);
 
 export function isFixedOriginGateway(protocol: ApiProtocol): boolean {

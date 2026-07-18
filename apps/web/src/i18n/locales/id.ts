@@ -470,6 +470,10 @@ export const id: Dict = {
   'settings.byokSpeechModel': 'Model suara',
   'settings.byokSpeechVoice': 'Suara',
   'settings.byokModelDefaultOption': 'Default',
+
+  'settings.byokWebSearch': 'Pencarian web',
+
+  'settings.byokWebSearchHint': 'Pencarian web menggunakan endpoint DeepSeek yang kompatibel dengan Anthropic (alat web_search). Upaya penalaran hanya berlaku saat pencarian web mati.',
   'settings.maxTokens': 'Token maks (opsional)',
   'settings.maxTokensHint': 'Batas panjang respons. Setiap model punya default sendiri; kosongkan untuk memakainya, atau isi angka untuk menimpa.',
   'settings.apiHint': 'Panggilan dikirim langsung dari browser ini ke base URL yang kamu atur. Tanpa proxy. Key tidak keluar dari localStorage.',

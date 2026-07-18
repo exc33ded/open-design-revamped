@@ -470,6 +470,10 @@ export const hu: Dict = {
   'settings.byokSpeechModel': 'Beszédmodell',
   'settings.byokSpeechVoice': 'Hang',
   'settings.byokModelDefaultOption': 'Alapértelmezett',
+
+  'settings.byokWebSearch': 'Webes keresés',
+
+  'settings.byokWebSearchHint': 'A webes keresés a DeepSeek Anthropic-kompatibilis végpontját használja (web_search eszköz). A gondolkodási erőfeszítés csak kikapcsolt webes keresés mellett érvényes.',
   'settings.maxTokens': 'Max tokenek (opcionális)',
   'settings.maxTokensHint': 'A válasz hosszának felső határa. Minden modellnek van hangolt alapértelmezése (placeholderként látható); hagyd üresen az alkalmazásához, vagy adj meg számot a felülíráshoz.',
   'settings.apiHint': 'A hívások a helyi daemon proxyn keresztül mennek a beállított Base URL-re. A kulcs csak ebben a böngészőben tárolódik, és a szolgáltatói kérésekkel együtt kerül elküldésre.',

@@ -60,6 +60,11 @@ export async function streamProxyEndpoint(
         messages,
         maxTokens: effectiveMaxTokens(cfg),
         apiVersion: cfg.apiVersion,
+        // DeepSeek-only knobs; other proxy routes ignore unknown fields.
+        ...(cfg.byokReasoningEffort
+          ? { reasoningEffort: cfg.byokReasoningEffort }
+          : {}),
+        ...(cfg.byokWebSearch ? { webSearch: true } : {}),
         ...(context?.projectId ? { projectId: context.projectId } : {}),
         ...(context?.byokImageModel
           ? { byokImageModel: context.byokImageModel }
