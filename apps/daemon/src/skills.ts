@@ -197,6 +197,88 @@ export function autoPickSkillIds(
   return scored.slice(0, max).map((entry) => entry.id);
 }
 
+// Claude Code command stubs (~/.claude/commands/<group>/<name>.md) route a
+// short instruction into a full skill ("Invoke the `cmdn-design` skill with
+// tool `checkup`…"). Surface each stub as its own composable skill entry:
+// id `<group>:<name>` (mirroring Claude Code's `/group:name` invocation),
+// body = stub body followed by the parent skill's body when a scanned
+// skill's folder or id matches the group, dir = the parent's dir so its
+// references/ side files stage into the run cwd like any other skill.
+export async function listClaudeCommandSkills(
+  commandsRoot: string,
+  parents: unknown,
+): Promise<SkillInfo[]> {
+  const parentList = Array.isArray(parents) ? (parents as SkillInfo[]) : [];
+  const seen = new Set(parentList.map((p) => p.id));
+  const out: SkillInfo[] = [];
+  let groups: Dirent[] = [];
+  try {
+    groups = await readdir(commandsRoot, { withFileTypes: true });
+  } catch {
+    return out;
+  }
+  for (const group of groups) {
+    if (!group.isDirectory()) continue;
+    const parent = parentList.find(
+      (p) => path.basename(p.dir ?? "") === group.name || p.id === group.name,
+    );
+    const groupDir = path.join(commandsRoot, group.name);
+    let files: Dirent[] = [];
+    try {
+      files = await readdir(groupDir, { withFileTypes: true });
+    } catch {
+      continue;
+    }
+    for (const file of files) {
+      if (!file.isFile() || !file.name.endsWith(".md")) continue;
+      const id = `${group.name}:${file.name.slice(0, -3)}`;
+      if (seen.has(id)) continue;
+      let raw = "";
+      try {
+        raw = await readFile(path.join(groupDir, file.name), "utf8");
+      } catch {
+        continue;
+      }
+      const { data: parsedData, body } = parseFrontmatter(raw) as {
+        data: unknown;
+        body: string;
+      };
+      const data = asSkillFrontmatter(parsedData);
+      const description =
+        typeof data.description === "string" ? data.description : "";
+      const stub = body.replaceAll("$ARGUMENTS", "the user request in this run").trim();
+      seen.add(id);
+      out.push({
+        id,
+        name: id,
+        description,
+        triggers: [],
+        mode: parent?.mode ?? "prototype",
+        surface: parent?.surface ?? "web",
+        source: "user",
+        craftRequires: parent?.craftRequires ?? [],
+        platform: parent?.platform ?? null,
+        scenario: parent?.scenario ?? "general",
+        category: parent?.category ?? null,
+        previewType: parent?.previewType ?? "html",
+        designSystemRequired: parent?.designSystemRequired ?? false,
+        defaultFor: [],
+        upstream: null,
+        featured: null,
+        fidelity: null,
+        speakerNotes: null,
+        animations: null,
+        examplePrompt: "",
+        aggregatesExamples: false,
+        critiquePolicy: parent?.critiquePolicy ?? null,
+        body: parent ? `${stub}\n\n---\n\n${parent.body}` : stub,
+        dir: parent?.dir ?? groupDir,
+      });
+    }
+  }
+  return out;
+}
+
 // Accept either a single root path or an array. When given multiple roots,
 // the first one wins on id collisions so user-imported skills under
 // USER_SKILLS_DIR can shadow a built-in skill of the same name without

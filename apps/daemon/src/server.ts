@@ -235,6 +235,7 @@ import { readCurrentAppVersionInfo } from './app-version.js';
 import {
   autoPickSkillIds,
   findSkillById,
+  listClaudeCommandSkills,
   listSkills,
   resolveSkillId,
   splitDerivedSkillId,
@@ -888,6 +889,19 @@ function claudePluginSkillRoots(): string[] {
   return roots;
 }
 const CLAUDE_PLUGIN_SKILL_ROOTS = claudePluginSkillRoots();
+// Claude Code command stubs (~/.claude/commands/<group>/<name>.md, e.g. the
+// cmdn-design per-tool entry points). Appended to skill listings — not
+// design-template listings — via the listSkills wrapper below.
+const CLAUDE_COMMANDS_DIR = path.join(os.homedir(), '.claude', 'commands');
+const listSkillsWithClaudeCommands: typeof listSkills = async (skillsRoots) => {
+  const base = await listSkills(skillsRoots);
+  // Design-template scans (EntryView Templates gallery) keep the plain
+  // listing; only the two skill surfaces gain command-derived entries.
+  if (skillsRoots !== SKILL_ROOTS && skillsRoots !== ALL_SKILL_LIKE_ROOTS) {
+    return base;
+  }
+  return base.concat(await listClaudeCommandSkills(CLAUDE_COMMANDS_DIR, base));
+};
 const SKILL_ROOTS = [
   USER_SKILLS_DIR,
   SKILLS_DIR,
@@ -2081,7 +2095,7 @@ export async function startServer({
   const designSystemServices = createDesignSystemServerServices({
     roots: { SKILL_ROOTS, DESIGN_TEMPLATE_ROOTS, ALL_SKILL_LIKE_ROOTS },
     paths: { PROJECTS_DIR, DESIGN_SYSTEMS_DIR, USER_DESIGN_SYSTEMS_DIR },
-    skills: { listSkills, findSkillById },
+    skills: { listSkills: listSkillsWithClaudeCommands, findSkillById },
     designSystems: {
       listDesignSystems,
       readDesignSystem,
