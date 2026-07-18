@@ -1272,6 +1272,7 @@ function isOpenCodeByokChatProtocol(
     protocol === 'azure' ||
     protocol === 'google' ||
     protocol === 'ollama' ||
+    protocol === 'deepseek' ||
     protocol === 'senseaudio' ||
     protocol === 'aihubmix'
   );

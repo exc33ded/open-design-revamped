@@ -524,6 +524,7 @@ type TestState =
 const ACCOUNT_MODEL_SOURCE_LABEL_HIDDEN = new Set<ApiProtocol>([
   'aihubmix',
   'bedrock',
+  'deepseek',
 ]);
 
 function hidesAccountModelSourceLabel(protocol: ApiProtocol): boolean {

@@ -102,3 +102,7 @@ deploy/agent-bins/
 # graphify knowledge-graph output
 graphify-out/
 graphify_out/
+
+# Local packaging output + agent tool config
+release/
+.serena/

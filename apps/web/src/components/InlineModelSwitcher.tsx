@@ -116,6 +116,7 @@ const API_PROTOCOL_TABS: Array<{ id: ApiProtocol; title: string }> = [
   { id: 'openai', title: 'OpenAI' },
   { id: 'azure', title: 'Azure' },
   { id: 'google', title: 'Google' },
+  { id: 'deepseek', title: 'DeepSeek' },
   { id: 'aihubmix', title: 'AIHubMix' },
 ];
 
