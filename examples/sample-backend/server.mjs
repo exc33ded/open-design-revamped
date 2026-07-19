@@ -27,8 +27,16 @@ const products = new Map([
 ]);
 const orders = new Map();
 
+function corsHeaders() {
+  return {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type, X-API-Key',
+  };
+}
+
 function json(res, status, body) {
-  res.writeHead(status, { 'Content-Type': 'application/json' });
+  res.writeHead(status, { 'Content-Type': 'application/json', ...corsHeaders() });
   res.end(JSON.stringify(body));
 }
 
@@ -41,6 +49,11 @@ async function readBody(req) {
 const server = http.createServer(async (req, res) => {
   const url = new URL(req.url, `http://localhost:${PORT}`);
   const path = url.pathname;
+
+  if (req.method === 'OPTIONS') {
+    res.writeHead(204, { ...corsHeaders(), 'Access-Control-Max-Age': 86400 });
+    return res.end();
+  }
 
   if (path === '/health') return json(res, 200, { ok: true, uptime: process.uptime() });
 
