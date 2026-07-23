@@ -49,6 +49,36 @@ describe('byok-opencode runtime config', () => {
     });
   });
 
+  it('pins an explicit maxTokens for the deepseek protocol so reasoning tokens cannot starve the visible answer', () => {
+    const out = buildOpenCodeByokProviderConfig(
+      { protocol: 'deepseek', apiKey: 'sk-deepseek' },
+      'deepseek-reasoner',
+    );
+
+    expect(out?.config).toMatchObject({
+      provider: {
+        [BYOK_OPENCODE_PROVIDER_ID]: {
+          models: {
+            'deepseek-reasoner': {
+              options: { maxTokens: 16_384 },
+            },
+          },
+        },
+      },
+    });
+  });
+
+  it('does not add maxTokens for other openai-compatible protocols', () => {
+    const out = buildOpenCodeByokProviderConfig(
+      { protocol: 'senseaudio', apiKey: 'sk-secret', baseUrl: 'https://api.senseaudio.cn' },
+      'deepseek-v4-flash',
+    );
+
+    const models = (out?.config.provider as Record<string, { models?: Record<string, unknown> }> | undefined)
+      ?.[BYOK_OPENCODE_PROVIDER_ID]?.models;
+    expect(models?.['deepseek-v4-flash']).not.toHaveProperty('options');
+  });
+
   it('maps native OpenAI BYOK to the OpenAI provider package', () => {
     const out = buildOpenCodeByokProviderConfig(
       { protocol: 'openai', apiKey: 'sk-openai', baseUrl: 'https://api.openai.com/v1' },

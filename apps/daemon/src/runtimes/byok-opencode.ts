@@ -82,6 +82,7 @@ export function buildOpenCodeByokProviderConfig(
               context: DEFAULT_CONTEXT_TOKEN_LIMIT,
               output: DEFAULT_OUTPUT_TOKEN_LIMIT,
             },
+            ...modelOptionsForProtocol(protocol),
           },
         },
       },
@@ -94,6 +95,24 @@ export function buildOpenCodeByokProviderConfig(
     env: needsApiKey ? { [BYOK_OPENCODE_API_KEY_ENV]: apiKey } : {},
     config,
   };
+}
+
+// DeepSeek's chat-completions endpoint defaults `max_tokens` to 4096 when the
+// request omits it. On a tool-heavy turn (several tool results already in
+// context) a reasoning-capable DeepSeek model can spend that entire budget on
+// `reasoning_content` and emit an empty visible `content`, which surfaces to
+// the user as a silent "agent produced no output" failure with no retry able
+// to fix it (the same prompt reproduces the same empty completion). Pin an
+// explicit `maxTokens` for the deepseek protocol so the visible answer always
+// has room after reasoning tokens.
+// ponytail: only deepseek is special-cased since it's the protocol with a
+// documented low default and a reasoning-token budget that competes with it;
+// extend to other openai-compatible protocols if they show the same failure.
+function modelOptionsForProtocol(
+  protocol: ByokChatProviderConfig['protocol'],
+): { options: { maxTokens: number } } | Record<string, never> {
+  if (protocol !== 'deepseek') return {};
+  return { options: { maxTokens: DEFAULT_OUTPUT_TOKEN_LIMIT } };
 }
 
 function normalizeProviderBaseUrl(
