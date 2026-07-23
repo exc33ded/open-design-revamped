@@ -1,0 +1,10 @@
+/* Self-hosted display face — Bricolage Grotesque (OFL), variable weight 200-800.
+   Latin subset, single 40KB woff2. Used only for --font-display (hero headlines,
+   wordmark moments); body text stays on the system --sans stack. */
+@font-face {
+  font-family: 'Bricolage Grotesque';
+  src: url('/fonts/bricolage-grotesque-var.woff2') format('woff2-variations');
+  font-weight: 200 800;
+  font-style: normal;
+  font-display: swap;
+}

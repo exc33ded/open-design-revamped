@@ -1,56 +1,70 @@
 /* ============================================================
-   Open Design — neutral product workspace
-   ============================================================ */
+   Open Design — warm paper workspace
+   ============================================================
+   Identity: "warm precision". Surfaces are warm paper (light) and
+   warm charcoal (dark); one hot vermilion accent carries the brand;
+   personality lives in typography, motion timing, shape and copy.
+
+   The chrome palette still obeys the original policy: it must not
+   bias generated artifacts. Warmth here is a low-saturation tint —
+   generated product UI keeps choosing its own palette through the
+   active skill/design brief.
+
+   Accent is user-customizable: `accentVars()` in src/state/appearance.ts
+   derives strong/soft/tint/hover from a single color at runtime, and the
+   theme-init inline script in app/layout.tsx applies it pre-hydration.
+   The static values below use the SAME color-mix formulas so the
+   pre-hydration paint matches the post-hydration result exactly.
+   Keep DEFAULT_ACCENT_COLOR, the layout.tsx script default, and
+   --accent here in sync. */
 :root {
-  /* Surface palette — neutral app chrome that does not bias generated artifacts.
-     Keep warm/brand colors out of preview backgrounds; generated product UI
-     must choose its own palette through the active skill/design brief. */
-  --bg: #fafafa;
-  --bg-app: #fafafa;
-  --bg-panel: #ffffff;
-  --bg-subtle: #f4f4f6;
-  --bg-muted: #ededf0;
-  --bg-fill-tertiary: rgba(0, 0, 0, 0.03);
-  --bg-fill-secondary: rgba(0, 0, 0, 0.06);
-  --bg-fill: rgba(0, 0, 0, 0.12);
-  --bg-elevated: #ffffff;
-  --border: #e4e4e9;
-  --border-strong: #cdcdd6;
-  --border-soft: #efeff3;
+  /* Surface palette — warm paper. */
+  --bg: #faf9f7;
+  --bg-app: #faf9f7;
+  --bg-panel: #fefdfb;
+  --bg-subtle: #f3f1ec;
+  --bg-muted: #eae7e0;
+  --bg-fill-tertiary: rgba(46, 36, 22, 0.04);
+  --bg-fill-secondary: rgba(46, 36, 22, 0.07);
+  --bg-fill: rgba(46, 36, 22, 0.13);
+  --bg-elevated: #fcfaf4;
+  --border: #e2d9c7;
+  --border-strong: #c8bca2;
+  --border-soft: #ece4d2;
 
-  --text: #18181b;
-  --text-strong: #09090b;
-  --text-muted: #6f6f78;
-  --text-soft: #96969e;
-  --text-faint: #b4b4bc;
+  --text: #2a241c;
+  --text-strong: #171208;
+  --text-muted: #6f6353;
+  --text-soft: #9a8d79;
+  --text-faint: #c0b4a0;
 
-  /* Accent — Open Design action color for app chrome only. */
-  --accent: #6366f1;
-  --accent-strong: #4f52e0;
-  --accent-soft: #dfe0fc;
-  --accent-tint: #eef0fe;
-  --accent-hover: #4f52e0;
+  /* Accent — hot vermilion, the single brand color. */
+  --accent: #d54a1e;
+  --accent-strong: color-mix(in srgb, var(--accent) 86%, var(--text-strong));
+  --accent-soft: color-mix(in srgb, var(--accent) 22%, var(--bg-panel));
+  --accent-tint: color-mix(in srgb, var(--accent) 12%, var(--bg-panel));
+  --accent-hover: color-mix(in srgb, var(--accent) 90%, var(--text-strong));
 
   /* Semantic accent tints used by tool / status pills. */
-  --green: #1f7a3a;
-  --green-bg: #e8f7ee;
-  --green-border: #c6ead2;
-  --blue: #2348b8;
-  --blue-bg: #e8efff;
-  --blue-border: #c8d6ff;
-  --purple: #6c3aa6;
-  --purple-bg: #f3ecf9;
-  --purple-border: #e4d4f1;
-  --red: #9c2a25;
-  --red-bg: #fdecea;
-  --red-border: #f5c6c2;
-  --amber: #b26200;
-  --amber-bg: #fff3e0;
+  --green: #2c6e33;
+  --green-bg: #e5f2e2;
+  --green-border: #c3e2c4;
+  --blue: #2b4ba8;
+  --blue-bg: #e6ecf8;
+  --blue-border: #c6d2ef;
+  --purple: #6d3ba0;
+  --purple-bg: #f1e9f7;
+  --purple-border: #e0d0ee;
+  --red: #a02c20;
+  --red-bg: #fae9e4;
+  --red-border: #f1c4ba;
+  --amber: #a05e00;
+  --amber-bg: #faefdb;
 
-  --shadow-xs: 0 1px 0 rgba(28, 27, 26, 0.04);
-  --shadow-sm: 0 1px 2px rgba(28, 27, 26, 0.05), 0 1px 3px rgba(28, 27, 26, 0.04);
-  --shadow-md: 0 6px 24px rgba(28, 27, 26, 0.07), 0 2px 6px rgba(28, 27, 26, 0.04);
-  --shadow-lg: 0 24px 60px rgba(28, 27, 26, 0.16), 0 8px 16px rgba(28, 27, 26, 0.07);
+  --shadow-xs: 0 1px 0 rgba(46, 34, 20, 0.04);
+  --shadow-sm: 0 1px 2px rgba(46, 34, 20, 0.05), 0 1px 3px rgba(46, 34, 20, 0.04);
+  --shadow-md: 0 6px 24px rgba(46, 34, 20, 0.08), 0 2px 6px rgba(46, 34, 20, 0.04);
+  --shadow-lg: 0 24px 60px rgba(46, 34, 20, 0.17), 0 8px 16px rgba(46, 34, 20, 0.08);
 
   /* Corner-radius scale — the only radii UI should reach for (Shape
      Consistency Lock). xs for inline code / micro-chips, sm for controls,
@@ -74,130 +88,134 @@
   --dur-enter: 200ms;
   --dur-exit: 140ms;
 
-  /* "Active option" indicator color, intentionally separate from --accent
-     (brand orange used by primary CTAs like Create / Save). Use --selected
-     for "this option is the one currently picked" affordances — selected
-     fidelity card, focused input ring, active filter pill — so a primary
-     CTA and a selected state can coexist on the same screen without
-     competing. --selected-soft is the 16% tint for outer rings / fills. */
-  --selected: #2563eb;
-  --selected-soft: rgba(37, 99, 235, 0.16);
+  /* "Active option" indicator, intentionally separate from --accent so a
+     primary CTA and a selected state can coexist without competing. Ink
+     (light) / cream (dark) keeps selection editorial and lets the hot
+     accent stay reserved for action. */
+  --selected: #2a241c;
+  --selected-soft: rgba(42, 36, 28, 0.14);
 
+  --font-display: 'Bricolage Grotesque', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
   --serif: 'Source Serif Pro', 'Source Serif 4', 'Iowan Old Style', 'Apple Garamond', Georgia, 'Times New Roman', serif;
   --sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft YaHei UI', 'Noto Sans', Roboto, 'Helvetica Neue', Arial, sans-serif;
   --mono: ui-monospace, 'SF Mono', SFMono-Regular, Menlo, Consolas, monospace;
 
   --prose-font-size: 15px;
   --prose-line-height: 1.75;
-  --code-header-bg: #f4f5f7;
-  --code-body-bg: #f9fafb;
+  --code-header-bg: #f0ebdf;
+  --code-body-bg: #f8f4ec;
   --code-font-size: 13px;
   --code-line-height: 1.65;
 }
 
 /* Dark theme variables — shared between explicit [data-theme="dark"] and the
-   OS-level prefers-color-scheme media query (system mode = no data-theme attr). */
+   OS-level prefers-color-scheme media query (system mode = no data-theme attr).
+   Warm charcoal: espresso-tinted neutrals, cream text, same hot accent. */
 [data-theme="dark"] {
   color-scheme: dark;
-  --bg: #0e0f13;
-  --bg-app: #0e0f13;
-  --bg-panel: #15161b;
-  --bg-subtle: #191a20;
-  --bg-muted: #22232b;
-  --bg-fill-tertiary: rgba(255, 255, 255, 0.06);
-  --bg-fill-secondary: rgba(255, 255, 255, 0.10);
-  --bg-fill: rgba(255, 255, 255, 0.16);
-  --bg-elevated: #1c1d24;
-  --border: #26272f;
-  --border-strong: #3a3b46;
-  --border-soft: #1e1f26;
+  --bg: #1a1917;
+  --bg-app: #1a1917;
+  --bg-panel: #221f1c;
+  --bg-subtle: #292622;
+  --bg-muted: #322e29;
+  --bg-fill-tertiary: rgba(240, 230, 214, 0.06);
+  --bg-fill-secondary: rgba(240, 230, 214, 0.1);
+  --bg-fill: rgba(240, 230, 214, 0.16);
+  --bg-elevated: #292219;
+  --border: #383025;
+  --border-strong: #4f4433;
+  --border-soft: #2b2419;
 
-  --text: #e6e6eb;
-  --text-strong: #f4f4f7;
-  --text-muted: #94949e;
-  --text-soft: #6a6a74;
-  --text-faint: #4a4a54;
+  --text: #ece4d4;
+  --text-strong: #f7f1e4;
+  --text-muted: #a89c88;
+  --text-soft: #7e7360;
+  --text-faint: #5c5244;
 
-  --accent: #818cf8;
-  --accent-strong: #96a0fa;
-  --accent-soft: #24264d;
-  --accent-tint: #1a1c38;
-  --accent-hover: #96a0fa;
+  --accent-strong: color-mix(in srgb, var(--accent) 86%, var(--text-strong));
+  --accent-soft: color-mix(in srgb, var(--accent) 22%, var(--bg-panel));
+  --accent-tint: color-mix(in srgb, var(--accent) 12%, var(--bg-panel));
+  --accent-hover: color-mix(in srgb, var(--accent) 90%, var(--text-strong));
 
-  --green: #4caf72;
-  --green-bg: #0f2a18;
-  --green-border: #1a4028;
-  --blue: #6b8fe8;
-  --blue-bg: #0f1a38;
-  --blue-border: #1a2c58;
-  --purple: #a87dd4;
-  --purple-bg: #1e1030;
-  --purple-border: #321a50;
-  --red: #e06b65;
-  --red-bg: #2a0e0c;
-  --red-border: #451714;
-  --amber: #e09a40;
-  --amber-bg: #2a1a04;
+  --green: #5cb374;
+  --green-bg: #17261a;
+  --green-border: #24402a;
+  --blue: #7d9ce6;
+  --blue-bg: #1a2231;
+  --blue-border: #28375a;
+  --purple: #b18ed8;
+  --purple-bg: #241a2e;
+  --purple-border: #3a2a50;
+  --red: #e0705f;
+  --red-bg: #2c1a15;
+  --red-border: #472420;
+  --amber: #dfa04a;
+  --amber-bg: #2c2212;
 
   --shadow-xs: 0 1px 0 rgba(0, 0, 0, 0.2);
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
   --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.25);
   --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.6), 0 8px 16px rgba(0, 0, 0, 0.3);
 
-  --code-header-bg: #1e1e20;
-  --code-body-bg: #18181b;
+  --selected: #ece4d4;
+  --selected-soft: rgba(236, 228, 212, 0.16);
+
+  --code-header-bg: #26211a;
+  --code-body-bg: #1e1913;
 }
 
 /* System mode: follow OS preference when no explicit data-theme is set. */
 @media (prefers-color-scheme: dark) {
   html:not([data-theme]) {
     color-scheme: dark;
-    --bg: #0e0f13;
-    --bg-app: #0e0f13;
-    --bg-panel: #15161b;
-    --bg-subtle: #191a20;
-    --bg-muted: #22232b;
-    --bg-fill-tertiary: rgba(255, 255, 255, 0.06);
-    --bg-fill-secondary: rgba(255, 255, 255, 0.10);
-    --bg-fill: rgba(255, 255, 255, 0.16);
-    --bg-elevated: #1c1d24;
-    --border: #26272f;
-    --border-strong: #3a3b46;
-    --border-soft: #1e1f26;
+    --bg: #171310;
+    --bg-app: #171310;
+    --bg-panel: #1f1a15;
+    --bg-subtle: #252019;
+    --bg-muted: #2e2820;
+    --bg-fill-tertiary: rgba(240, 230, 214, 0.06);
+    --bg-fill-secondary: rgba(240, 230, 214, 0.1);
+    --bg-fill: rgba(240, 230, 214, 0.16);
+    --bg-elevated: #292219;
+    --border: #383025;
+    --border-strong: #4f4433;
+    --border-soft: #2b2419;
 
-    --text: #e6e6eb;
-    --text-strong: #f4f4f7;
-    --text-muted: #94949e;
-    --text-soft: #6a6a74;
-    --text-faint: #4a4a54;
+    --text: #ece4d4;
+    --text-strong: #f7f1e4;
+    --text-muted: #a89c88;
+    --text-soft: #7e7360;
+    --text-faint: #5c5244;
 
-    --accent: #818cf8;
-    --accent-strong: #96a0fa;
-    --accent-soft: #24264d;
-    --accent-tint: #1a1c38;
-    --accent-hover: #96a0fa;
+    --accent-strong: color-mix(in srgb, var(--accent) 86%, var(--text-strong));
+    --accent-soft: color-mix(in srgb, var(--accent) 22%, var(--bg-panel));
+    --accent-tint: color-mix(in srgb, var(--accent) 12%, var(--bg-panel));
+    --accent-hover: color-mix(in srgb, var(--accent) 90%, var(--text-strong));
 
-    --green: #4caf72;
-    --green-bg: #0f2a18;
-    --green-border: #1a4028;
-    --blue: #6b8fe8;
-    --blue-bg: #0f1a38;
-    --blue-border: #1a2c58;
-    --purple: #a87dd4;
-    --purple-bg: #1e1030;
-    --purple-border: #321a50;
-    --red: #e06b65;
-    --red-bg: #2a0e0c;
-    --red-border: #451714;
-    --amber: #e09a40;
-    --amber-bg: #2a1a04;
+    --green: #5cb374;
+    --green-bg: #17261a;
+    --green-border: #24402a;
+    --blue: #7d9ce6;
+    --blue-bg: #1a2231;
+    --blue-border: #28375a;
+    --purple: #b18ed8;
+    --purple-bg: #241a2e;
+    --purple-border: #3a2a50;
+    --red: #e0705f;
+    --red-bg: #2c1a15;
+    --red-border: #472420;
+    --amber: #dfa04a;
+    --amber-bg: #2c2212;
 
     --shadow-xs: 0 1px 0 rgba(0, 0, 0, 0.2);
     --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.3), 0 1px 3px rgba(0, 0, 0, 0.2);
     --shadow-md: 0 6px 24px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.25);
     --shadow-lg: 0 24px 60px rgba(0, 0, 0, 0.6), 0 8px 16px rgba(0, 0, 0, 0.3);
 
-    --code-header-bg: #1e1e20;
-    --code-body-bg: #18181b;
+    --selected: #ece4d4;
+    --selected-soft: rgba(236, 228, 212, 0.16);
+
+    --code-header-bg: #26211a;
+    --code-body-bg: #1e1913;
   }
 }

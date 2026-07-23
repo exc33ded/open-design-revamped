@@ -845,7 +845,16 @@ function AppInner() {
     let cancelled = false;
     const agentStreamAbort = new AbortController();
     (async () => {
-      const alive = await daemonIsLive();
+      // The daemon can still be spawning (cold start) when this check first
+      // runs — a single failed probe used to be taken as "no daemon" and
+      // every loading flag was cleared for good, even though the daemon
+      // came up a moment later. Poll for a few seconds before giving up.
+      let alive = await daemonIsLive();
+      for (let attempt = 0; !alive && attempt < 20 && !cancelled; attempt += 1) {
+        await new Promise((resolve) => setTimeout(resolve, 500));
+        if (cancelled) return;
+        alive = await daemonIsLive();
+      }
       if (cancelled) return;
       setDaemonLive(alive);
       if (!alive) {

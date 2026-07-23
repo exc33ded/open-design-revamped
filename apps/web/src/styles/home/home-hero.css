@@ -24,6 +24,18 @@
   gap: 14px;
   padding: 32px 0 8px;
 }
+/* Signature warm halo — a whisper of the hot accent behind the hero,
+   so the launch surface reads as ours even before the type lands.
+   Pure gradient, zero paint cost beyond one composited layer. */
+.home-hero::before {
+  content: '';
+  position: absolute;
+  inset: -80px -120px auto;
+  height: 380px;
+  background: radial-gradient(ellipse 60% 55% at 50% 30%, var(--accent-tint), transparent 70%);
+  pointer-events: none;
+  z-index: -1;
+}
 .home-hero__brand {
   position: relative;
   display: inline-flex;
@@ -56,19 +68,22 @@
   -webkit-user-drag: none;
 }
 .home-hero__brand-name {
-  font-family: var(--serif);
+  font-family: var(--font-display);
   font-weight: 600;
   font-size: 16px;
+  letter-spacing: -0.01em;
   color: var(--text-strong);
 }
 .home-hero__title {
   margin: 0;
-  font-family: var(--serif);
-  font-weight: 600;
-  font-size: 40px;
-  letter-spacing: -0.02em;
+  font-family: var(--font-display);
+  font-weight: 620;
+  font-size: 44px;
+  line-height: 1.08;
+  letter-spacing: -0.03em;
   color: var(--text-strong);
   text-align: center;
+  text-wrap: balance;
 }
 .home-hero__subtitle {
   margin: 0;
@@ -77,6 +92,12 @@
   text-align: center;
   max-width: 540px;
   line-height: 1.55;
+}
+.home-hero__pet-cameo {
+  display: inline-block;
+  margin-left: 6px;
+  font-size: 14px;
+  vertical-align: -1px;
 }
 .home-hero__subtitle kbd {
   font: inherit;

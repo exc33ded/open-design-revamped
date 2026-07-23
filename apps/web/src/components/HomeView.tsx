@@ -525,9 +525,20 @@ export function HomeView({
     let cancelled = false;
     // On mount use the cache-aware loader (skips the network when warm); an
     // explicit plugins-changed event forces a fresh fetch.
-    const load = (force = false) => {
+    // A cold-start daemon can still be spawning when this first runs; a
+    // failed fetch reads identically to "zero plugins installed" (both
+    // resolve to []), so without a retry the rail would enable itself with
+    // an empty catalog and "reinstall the daemon" chip clicks during the
+    // few seconds it takes the daemon to come up.
+    const load = (force = false, attempt = 0) => {
       void (force ? listPlugins() : listPluginsFresh()).then((rows) => {
         if (cancelled) return;
+        // ponytail: treats "empty" as "still connecting" up to ~10s; bundled
+        // plugins mean a genuinely empty catalog shouldn't happen in practice.
+        if (rows.length === 0 && attempt < 20) {
+          setTimeout(() => load(true, attempt + 1), 500);
+          return;
+        }
         setPlugins(rows);
         setPluginsLoading(false);
       });

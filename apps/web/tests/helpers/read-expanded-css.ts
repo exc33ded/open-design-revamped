@@ -12,7 +12,9 @@ function expandCssFile(filePath: string, seen = new Set<string>()): string {
   }
   seen.add(key);
 
-  const css = readFileSync(filePath, 'utf8');
+  // Normalize CRLF so assertions written with \n needles pass on Windows
+  // checkouts regardless of per-file line endings.
+  const css = readFileSync(filePath, 'utf8').replace(/\r\n/g, '\n');
   return css.replace(/@import\s+(?:url\(([^)]+)\)|(['"])([^'"]+)\2);/g, (_match, urlImport, _quote, quotedImport) => {
     const specifier = (quotedImport ?? urlImport ?? '').trim().replace(/^['"]|['"]$/g, '');
     if (!specifier.startsWith('./') && !specifier.startsWith('../')) {

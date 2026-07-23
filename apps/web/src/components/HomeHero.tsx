@@ -1233,6 +1233,7 @@ export const HomeHero = forwardRef<HomeHeroHandle, Props>(function HomeHero(
       <h1 className="home-hero__title">{t('homeHero.title')}</h1>
       <p className="home-hero__subtitle">
         {t('homeHero.subtitlePrefix')}
+        <span className="home-hero__pet-cameo" aria-hidden>🦄</span>
       </p>
 
       <div

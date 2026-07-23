@@ -1179,7 +1179,9 @@
   border: 1px solid color-mix(in srgb, var(--selected) 88%, #000);
   border-radius: 14px 14px 4px 14px;
   background: var(--selected);
-  color: #fff;
+  /* --selected flips ink (light) / cream (dark); --bg is its inverse in both
+     themes, so the bubble text stays readable in dark mode. */
+  color: var(--bg);
   line-height: 1.45;
   font-size: 13.5px;
   box-shadow: var(--shadow-xs);
