@@ -540,6 +540,22 @@ function buildOpenCodeExternalDirectoryAllowlist(
     allowlist[dir] = 'allow';
     allowlist[joinPermissionGlob(dir, '*')] = 'allow';
     allowlist[joinPermissionGlob(dir, '**')] = 'allow';
+    // Also allow a shallow look at the parent (exact dir + direct children
+    // only, deliberately no `**`). An agent naturally reads one level up
+    // from a linked subfolder to see project-root context (README,
+    // package.json, docker-compose.yml, sibling service names) — without
+    // this, that read is an `external_directory` request the daemon never
+    // pre-granted, headless OpenCode auto-rejects it (it cannot prompt),
+    // and the whole turn dies as `empty_output` (see the `edit`/`bash`/
+    // `webfetch` blanket-allow comment above — same failure shape, this
+    // was the one case it didn't cover). Omitting `**` here is deliberate:
+    // it grants "see what's next to the linked folder", not "recursively
+    // read every unrelated sibling folder's full tree".
+    const parent = path.dirname(dir);
+    if (parent !== dir) {
+      allowlist[parent] = 'allow';
+      allowlist[joinPermissionGlob(parent, '*')] = 'allow';
+    }
   }
   return allowlist;
 }

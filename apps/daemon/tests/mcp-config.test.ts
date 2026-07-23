@@ -440,6 +440,27 @@ describe('buildOpenCodeMcpConfigContent', () => {
     });
   });
 
+  it('also grants a shallow parent-directory allowlist so an agent reading one level up from a linked dir is not auto-rejected into empty_output', () => {
+    const linked = path.resolve('/tmp/od-project/backend/app');
+    const parent = path.dirname(linked);
+    const raw = buildOpenCodeMcpConfigContent([], {}, { allowedDirectories: [linked] });
+
+    expect(raw).not.toBeNull();
+    const parsed = JSON.parse(raw as string) as {
+      permission?: { external_directory?: Record<string, string> };
+    };
+    const grants = parsed.permission?.external_directory ?? {};
+
+    // The linked dir itself keeps full recursive access.
+    expect(grants[linked]).toBe('allow');
+    expect(grants[path.join(linked, '**')]).toBe('allow');
+    // The parent gets exact-dir + direct-children access only — no `**` —
+    // so sibling folders' names/files are visible but not recursively readable.
+    expect(grants[parent]).toBe('allow');
+    expect(grants[path.join(parent, '*')]).toBe('allow');
+    expect(grants[path.join(parent, '**')]).toBeUndefined();
+  });
+
   it('merges MCP servers and granted external_directory rules into one payload', () => {
     const raw = buildOpenCodeMcpConfigContent(
       [
